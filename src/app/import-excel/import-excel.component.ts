@@ -24,7 +24,7 @@ export class ImportExcelComponent implements OnInit {
     this.fileList.push(file);
     console.log('add file ', file);
     return false;
-  };
+  }
 
   /**
    * excel导入数据
