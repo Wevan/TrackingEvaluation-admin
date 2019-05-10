@@ -10,6 +10,8 @@ import { StudentParam } from 'src/app/entity/Params';
   styleUrls: ['./student.component.scss'],
 })
 export class StudentComponent implements OnInit {
+
+  constructor(private fb: FormBuilder, private userService: UserService) {}
   validateForm: FormGroup;
   dataSet = [];
   pageSize = 10;
@@ -20,7 +22,26 @@ export class StudentComponent implements OnInit {
   listOfOption: Array<{ label: string; value: string }> = [];
   listOfTagOptions = [];
 
-  constructor(private fb: FormBuilder, private userService: UserService) {}
+  listOfData = [
+    {
+      key: '1',
+      name: 'John Brown',
+      age: 32,
+      address: 'New York No. 1 Lake Park',
+    },
+    {
+      key: '2',
+      name: 'Jim Green',
+      age: 42,
+      address: 'London No. 1 Lake Park',
+    },
+    {
+      key: '3',
+      name: 'Joe Black',
+      age: 32,
+      address: 'Sidney No. 1 Lake Park',
+    },
+  ];
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
@@ -93,34 +114,13 @@ export class StudentComponent implements OnInit {
 
     this.userService.downExcle().subscribe(res => {
       console.log(res);
-      let file = new File([res], 'mm.xml', {
+      const file = new File([res], 'mm.xml', {
         type: 'application/vnd.ms-excel',
       });
       console.log('file is ', file);
-      var objUrl = URL.createObjectURL(res);
+      const objUrl = URL.createObjectURL(res);
       window.open(objUrl);
       URL.revokeObjectURL(objUrl);
     });
   }
-
-  listOfData = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-    },
-  ];
 }

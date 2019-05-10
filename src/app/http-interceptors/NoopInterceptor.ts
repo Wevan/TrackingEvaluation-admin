@@ -20,7 +20,7 @@ export class NoopInterceptor implements HttpInterceptor {
   private baseUrl: string;
 
   constructor(private router: Router) {
-    if (environment.production == true) {
+    if (environment.production === true) {
       // 生产环境
       this.baseUrl = 'http://106.12.195.114:8081';
     } else {
