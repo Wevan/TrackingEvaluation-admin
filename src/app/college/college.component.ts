@@ -14,14 +14,8 @@ export class CollegeComponent implements OnInit {
 
   size = 'default';
   validateForm: FormGroup;
-  dataSet = [];
-  pageSize = 10;
-  pageIndex = 1;
   isVisible = false;
   isOkLoading = false;
-
-  listOfOption: Array<{ label: string; value: string }> = [];
-  listOfTagOptions = [];
 
   listOfData = [
     {
@@ -43,16 +37,17 @@ export class CollegeComponent implements OnInit {
       address: 'Sidney No. 1 Lake Park',
     },
   ];
+  value: 'string';
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
       classId: [null, [Validators.required]],
-      studentName: [null, [Validators.required]],
-      studentNum: [null, [Validators.required]],
+      collegeName: [null, [Validators.required]],
+      majorName: [null, [Validators.required]],
     });
   }
 
-  addStudent(): void {
+  addCollege(): void {
     this.isVisible = true;
   }
 
