@@ -41,9 +41,9 @@ export class CollegeComponent implements OnInit {
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      classId: [null, [Validators.required]],
-      collegeName: [null, [Validators.required]],
       majorName: [null, [Validators.required]],
+      collegeName: [null, [Validators.required]],
+      collegeDescription: [null, [Validators.required]],
     });
   }
 
@@ -52,7 +52,11 @@ export class CollegeComponent implements OnInit {
   }
 
   handleOk(): void {
-
+    this.isOkLoading = true;
+    const majorName = this.validateForm.get('majorName').value;
+    const collegeName = this.validateForm.get('collegeName').value;
+    const collegeDescription = this.validateForm.get('collegeDescription').value;
+    console.log('major', majorName, 'collegeName', collegeName, 'discription', collegeDescription);
   }
 
   handleCancel(): void {
