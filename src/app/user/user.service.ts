@@ -9,8 +9,6 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   getAll(type: String): Observable<Result> {
-    console.log('类型是', type);
-
     return this.http.get<Result>(`/user/${type}/0`);
   }
 

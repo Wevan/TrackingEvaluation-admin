@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 import {CollegeRoutingModule} from './college-routing.module';
 import {CollegeComponent} from './college.component';
 import {SharedModule} from '../shared/shared.module';
+import {CollegeService} from './college.service';
 
 @NgModule({
   declarations: [CollegeComponent],
@@ -10,7 +11,8 @@ import {SharedModule} from '../shared/shared.module';
     CommonModule,
     CollegeRoutingModule,
     SharedModule
-  ]
+  ],
+  providers: [CollegeService]
 })
 export class CollegeModule {
 }

@@ -26,12 +26,12 @@
   <tr *ngFor="let item of basicTable.data;let i=index">
     <td>{{ i + 1 }}</td>
     <td>{{ item.name }}</td>
-    <td>{{ item.age }}</td>
-    <td>{{ item.address }}</td>
+    <td>{{ item.major }}</td>
+    <td><span nz-tooltip nzTitle="{{ item.summary }}">{{ item.summary }}</span></td>
     <td>
       <a>修改</a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a>删除</a>
+      <a (click)="deleteOne(item.id,i)">删除</a>
     </td>
   </tr>
   </tbody>
@@ -83,10 +83,10 @@
       </nz-form-label>
       <nz-form-control [nzSm]="14" [nzXs]="24">
         <textarea id="collegeDescription" formControlName="collegeDescription"
-          nz-input
-          placeholder="专业介绍"
-          [(ngModel)]="value"
-          [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                  nz-input
+                  placeholder="专业介绍"
+                  [(ngModel)]="value"
+                  [nzAutosize]="{ minRows: 2, maxRows: 6 }"
         ></textarea>
       </nz-form-control>
     </nz-form-item>

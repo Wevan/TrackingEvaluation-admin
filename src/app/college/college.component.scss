@@ -14,3 +14,8 @@
 .login-form-button {
   width: 100%;
 }
+td {
+  max-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+}

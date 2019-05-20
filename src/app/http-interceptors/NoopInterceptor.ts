@@ -5,11 +5,11 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { environment } from 'src/environments/environment';
+import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
+import {Observable} from 'rxjs';
+import {tap} from 'rxjs/operators';
+import {environment} from 'src/environments/environment';
 
 /**
  * @author 杨晓辉
@@ -17,16 +17,16 @@ import { environment } from 'src/environments/environment';
  */
 @Injectable()
 export class NoopInterceptor implements HttpInterceptor {
-  private baseUrl: string;
+  private baseUrl = 'http://localhost:8081';
 
   constructor(private router: Router) {
-    if (environment.production === true) {
-      // 生产环境
-      this.baseUrl = 'http://106.12.195.114:8081';
-    } else {
-      // 开发环境
-      this.baseUrl = 'http://localhost:8081';
-    }
+    // if (environment.production === true) {
+    //   // 生产环境
+    //   this.baseUrl = 'http://106.12.195.114:8081';
+    // } else {
+    //   // 开发环境
+    //   this.baseUrl = 'http://localhost:8081';
+    // }
   }
 
   intercept(
@@ -39,15 +39,15 @@ export class NoopInterceptor implements HttpInterceptor {
     if (req.url === '/user/login') {
       request = req.clone({
         url: `${this.baseUrl}${req.url}`,
-        headers: req.headers.set('Content-Type', 'application/json'),
+        // headers: req.headers.set('Content-Type', 'application/json'),
       });
     } else {
       request = req.clone({
         url: `${this.baseUrl}${req.url}`,
-        headers: req.headers.set(
-          'Authorization',
-          localStorage.getItem('token'),
-        ),
+        // headers: req.headers.set(
+        //   'Authorization',
+        //   localStorage.getItem('token'),
+        // ),
       });
     }
 

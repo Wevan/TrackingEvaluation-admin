@@ -78,7 +78,7 @@ export class AdminComponent implements OnInit {
     teacherParam.positionId = positionId;
     teacherParam.teacherName = teacherName;
     teacherParam.teacherNum = teacherNumber;
-    //提交教师信息
+    // 提交教师信息
     this.userService.addTeacher(teacherParam).subscribe(() => {
       this.isVisible = false;
       this.isOkLoading = false;
