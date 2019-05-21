@@ -1,14 +1,28 @@
-<button nz-button nzType="default" (click)="addStudent()">添加</button>
-<button nz-button nzType="default">批量添加</button>
-<button
-  nz-button
-  nzType="primary"
-  [nzSize]="size"
-  nzShape="round"
-  (click)="download()"
+<ng-container class="button-group">
+  <button nz-button nzType="default" (click)="addStudent()" class="btn-add">
+    添加
+  </button>
+
+  <button
+    class="btn-download"
+    nz-button
+    nzType="primary"
+    [nzSize]="size"
+    nzShape="round"
+    (click)="download()"
+  >
+    <i nz-icon type="download"></i>下载模板
+  </button>
+</ng-container>
+<nz-upload
+  (nzChange)="handleUpload()"
+  [(nzFileList)]="studentFileList"
+  class="btn-upload"
 >
-  <i nz-icon type="download"></i>下载模板
-</button>
+  <button nz-button>
+    <i nz-icon nzType="upload"></i><span>点击上传</span>
+  </button>
+</nz-upload>
 <nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
 
 <!-- 学生信息表格 -->

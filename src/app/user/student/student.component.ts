@@ -4,6 +4,9 @@ import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Result } from 'src/app/entity/Result';
 import { StudentParam } from 'src/app/entity/Params';
 import { StudentInfo, StudentProfileInfo } from 'src/app/entity/Info';
+import { HttpRequest, HttpClient, HttpResponse } from '@angular/common/http';
+import { filter } from 'rxjs/operators';
+import { UploadFile } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-student',
@@ -12,7 +15,11 @@ import { StudentInfo, StudentProfileInfo } from 'src/app/entity/Info';
 })
 export class StudentComponent implements OnInit {
   size = 'default';
-  constructor(private fb: FormBuilder, private userService: UserService) {}
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private http: HttpClient,
+  ) {}
   validateForm: FormGroup;
   dataSet = [];
   pageSize = 10;
@@ -58,6 +65,34 @@ export class StudentComponent implements OnInit {
 
   addStudent(): void {
     this.isVisible = true;
+  }
+  studentFileList: FileList;
+  handleUpload(): void {
+    let body = new FormData();
+    const req = new HttpRequest('POST', `/file/excel/student`, body);
+
+    // body.append('file', this.studentFileList.item);
+
+    // body.append('file', item.file);
+    this.http.post<Result>(`/file/excel/student`, body).subscribe(
+      (result: Result) => {
+        console.log('result is ', result);
+      },
+      (error: Error) => {
+        console.log('error == ', error);
+      },
+    );
+    // this.http
+    //   .request<Result>(req)
+    //   .pipe(filter(e => e instanceof HttpResponse))
+    //   .subscribe(
+    //     () => {
+    //       console.log('upload success');
+    //     },
+    //     (error: Error) => {
+    //       console.log('error == ', error);
+    //     },
+    //   );
   }
 
   /**
