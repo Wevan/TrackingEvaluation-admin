@@ -31,4 +31,8 @@ export class UserService {
   addTeacher(teacherParam: TeacherParam) {
     return this.http.post('/teacher', teacherParam);
   }
+
+  getStudentProfile(studentId: number): Observable<Result> {
+    return this.http.get<Result>(`/user/student/${studentId}`);
+  }
 }

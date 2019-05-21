@@ -5,11 +5,11 @@ import {
   HttpInterceptor,
   HttpRequest,
 } from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Router} from '@angular/router';
-import {Observable} from 'rxjs';
-import {tap} from 'rxjs/operators';
-import {environment} from 'src/environments/environment';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 /**
  * @author 杨晓辉
@@ -39,7 +39,18 @@ export class NoopInterceptor implements HttpInterceptor {
     if (req.url === '/user/login') {
       request = req.clone({
         url: `${this.baseUrl}${req.url}`,
-        // headers: req.headers.set('Content-Type', 'application/json'),
+        headers: req.headers.set('Content-Type', 'application/json'),
+      });
+    } else if (req.url.toString().indexOf('file') !== -1) {
+      console.log(req.url.toString().indexOf('file'));
+      console.log('文件上传');
+
+      request = req.clone({
+        url: `${this.baseUrl}${req.url}`,
+        // headers: req.headers.set(
+        //   'Authorization',
+        //   localStorage.getItem('token'),
+        // ),
       });
     } else {
       request = req.clone({

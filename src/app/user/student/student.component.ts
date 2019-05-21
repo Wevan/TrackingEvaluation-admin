@@ -3,6 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Result } from 'src/app/entity/Result';
 import { StudentParam } from 'src/app/entity/Params';
+import { StudentInfo, StudentProfileInfo } from 'src/app/entity/Info';
+import { HttpRequest, HttpClient, HttpResponse } from '@angular/common/http';
+import { filter } from 'rxjs/operators';
+import { UploadFile } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-student',
@@ -11,48 +15,38 @@ import { StudentParam } from 'src/app/entity/Params';
 })
 export class StudentComponent implements OnInit {
   size = 'default';
-  constructor(private fb: FormBuilder, private userService: UserService) {}
+  constructor(
+    private fb: FormBuilder,
+    private userService: UserService,
+    private http: HttpClient,
+  ) {}
   validateForm: FormGroup;
   dataSet = [];
   pageSize = 10;
   pageIndex = 1;
   isVisible = false;
   isOkLoading = false;
-
+  isUpdateVisible = false;
   listOfOption: Array<{ label: string; value: string }> = [];
   listOfTagOptions = [];
-
-  listOfData = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-    },
-  ];
-
+  updateFrom: FormGroup;
+  listOfData: Array<StudentInfo> = [];
+  studentProfileInfo = new StudentProfileInfo();
+  updateModalTitle: string = '';
   ngOnInit(): void {
     this.validateForm = this.fb.group({
       classId: [null, [Validators.required]],
       studentName: [null, [Validators.required]],
       studentNum: [null, [Validators.required]],
     });
+    this.updateFrom = this.fb.group({
+      name: [null, [Validators.required]],
+      studentNumber: [null, [Validators.required]],
+      class: [null, [Validators.required]],
+    });
     const children: Array<{ label: string; value: string }> = [];
     // 获取班级的请求
     this.userService.getClasses().subscribe((result: Result) => {
-      console.log('result is ', result);
       for (let i = 0; i < result.data.length; i++) {
         children.push({
           label: result.data[i].name,
@@ -64,27 +58,46 @@ export class StudentComponent implements OnInit {
 
     // 获取所有学生
     this.userService.getAll('students').subscribe((result: Result) => {
-      result.data.forEach(
-        element => {
-          this.dataSet.push({
-            id: element.id,
-            studentName: element.name,
-            studentNumber: element.studentNumber,
-            class: element.class,
-            classId: element.classId,
-          });
-        },
-        () => {
-          console.log('student ', this.dataSet);
-        },
-      );
+      console.log('students ', result.data);
+      this.listOfData = result.data;
     });
   }
 
   addStudent(): void {
     this.isVisible = true;
   }
+  studentFileList: FileList;
+  handleUpload(): void {
+    let body = new FormData();
+    const req = new HttpRequest('POST', `/file/excel/student`, body);
 
+    // body.append('file', this.studentFileList.item);
+
+    // body.append('file', item.file);
+    this.http.post<Result>(`/file/excel/student`, body).subscribe(
+      (result: Result) => {
+        console.log('result is ', result);
+      },
+      (error: Error) => {
+        console.log('error == ', error);
+      },
+    );
+    // this.http
+    //   .request<Result>(req)
+    //   .pipe(filter(e => e instanceof HttpResponse))
+    //   .subscribe(
+    //     () => {
+    //       console.log('upload success');
+    //     },
+    //     (error: Error) => {
+    //       console.log('error == ', error);
+    //     },
+    //   );
+  }
+
+  /**
+   * 确定后上传数据 进行单个添加
+   */
   handleOk(): void {
     this.isOkLoading = true;
     for (const i of Object.keys(this.validateForm.controls)) {
@@ -122,5 +135,24 @@ export class StudentComponent implements OnInit {
       window.open(objUrl);
       URL.revokeObjectURL(objUrl);
     });
+  }
+
+  openProfile(studentInfo: StudentInfo) {
+    console.log('student id ', studentInfo);
+    this.updateModalTitle = studentInfo.name;
+    this.isUpdateVisible = true;
+    this.userService
+      .getStudentProfile(studentInfo.id)
+      .subscribe((result: Result) => {
+        this.studentProfileInfo = result.data;
+        console.log('result profile ', this.studentProfileInfo);
+      });
+  }
+  handleUpdateCancel() {
+    this.isUpdateVisible = false;
+  }
+
+  handleUpdateOk() {
+    this.isUpdateVisible = false;
   }
 }
