@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Result } from 'src/app/entity/Result';
 import { StudentParam } from 'src/app/entity/Params';
+import { StudentInfo, StudentProfileInfo } from 'src/app/entity/Info';
 
 @Component({
   selector: 'app-student',
@@ -18,41 +19,27 @@ export class StudentComponent implements OnInit {
   pageIndex = 1;
   isVisible = false;
   isOkLoading = false;
-
+  isUpdateVisible = false;
   listOfOption: Array<{ label: string; value: string }> = [];
   listOfTagOptions = [];
-
-  listOfData = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-    },
-  ];
-
+  updateFrom: FormGroup;
+  listOfData: Array<StudentInfo> = [];
+  studentProfileInfo = new StudentProfileInfo();
+  updateModalTitle: string = '';
   ngOnInit(): void {
     this.validateForm = this.fb.group({
       classId: [null, [Validators.required]],
       studentName: [null, [Validators.required]],
       studentNum: [null, [Validators.required]],
     });
+    this.updateFrom = this.fb.group({
+      name: [null, [Validators.required]],
+      studentNumber: [null, [Validators.required]],
+      class: [null, [Validators.required]],
+    });
     const children: Array<{ label: string; value: string }> = [];
     // 获取班级的请求
     this.userService.getClasses().subscribe((result: Result) => {
-      console.log('result is ', result);
       for (let i = 0; i < result.data.length; i++) {
         children.push({
           label: result.data[i].name,
@@ -64,20 +51,8 @@ export class StudentComponent implements OnInit {
 
     // 获取所有学生
     this.userService.getAll('students').subscribe((result: Result) => {
-      result.data.forEach(
-        element => {
-          this.dataSet.push({
-            id: element.id,
-            studentName: element.name,
-            studentNumber: element.studentNumber,
-            class: element.class,
-            classId: element.classId,
-          });
-        },
-        () => {
-          console.log('student ', this.dataSet);
-        },
-      );
+      console.log('students ', result.data);
+      this.listOfData = result.data;
     });
   }
 
@@ -85,6 +60,9 @@ export class StudentComponent implements OnInit {
     this.isVisible = true;
   }
 
+  /**
+   * 确定后上传数据 进行单个添加
+   */
   handleOk(): void {
     this.isOkLoading = true;
     for (const i of Object.keys(this.validateForm.controls)) {
@@ -122,5 +100,24 @@ export class StudentComponent implements OnInit {
       window.open(objUrl);
       URL.revokeObjectURL(objUrl);
     });
+  }
+
+  openProfile(studentInfo: StudentInfo) {
+    console.log('student id ', studentInfo);
+    this.updateModalTitle = studentInfo.name;
+    this.isUpdateVisible = true;
+    this.userService
+      .getStudentProfile(studentInfo.id)
+      .subscribe((result: Result) => {
+        this.studentProfileInfo = result.data;
+        console.log('result profile ', this.studentProfileInfo);
+      });
+  }
+  handleUpdateCancel() {
+    this.isUpdateVisible = false;
+  }
+
+  handleUpdateOk() {
+    this.isUpdateVisible = false;
   }
 }

@@ -12,7 +12,13 @@
 <nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
 
 <!-- 学生信息表格 -->
-<nz-table #basicTable [nzData]="dataSet">
+<nz-table
+  #basicTable
+  [nzData]="listOfData"
+  [nzTotal]="50"
+  [(nzPageIndex)]="pageIndex"
+  [(nzPageSize)]="pageSize"
+>
   <thead>
     <tr>
       <th>序号</th>
@@ -23,20 +29,20 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let data of basicTable.data;let i=index">
+    <tr *ngFor="let data of basicTable.data; let i = index">
       <td>{{ i + 1 }}</td>
-      <td>{{ data.studentName }}</td>
+      <td>{{ data.name }}</td>
       <td>{{ data.studentNumber }}</td>
       <td>{{ data.class }}</td>
       <td>
-        <a>详细信息 一 {{ data.studentName }}</a>
-        <nz-divider nzType="vertical"></nz-divider>
-        <a>禁用</a>
+        <!-- <button (click)="openProfile(item)">详细信息</button> -->
+        <button nz-button nzType="primary" (click)="openProfile(data)">
+          详细信息
+        </button>
       </td>
     </tr>
   </tbody>
 </nz-table>
-
 <!-- 单个学生添加 模态框 -->
 <nz-modal
   [(nzVisible)]="isVisible"
@@ -104,25 +110,35 @@
   </form>
 </nz-modal>
 
-<nz-table #basicTable1 [nzData]="dataSet">
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Age</th>
-      <th>Address</th>
-      <th>Action</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let data of basicTable1.data">
-      <td>{{ data.name }}</td>
-      <td>{{ data.age }}</td>
-      <td>{{ data.address }}</td>
-      <td>
-        <a>Action 一 {{ data.name }}</a>
-        <nz-divider nzType="vertical"></nz-divider>
-        <a>Delete</a>
-      </td>
-    </tr>
-  </tbody>
-</nz-table>
+<nz-modal
+  [(nzVisible)]="isUpdateVisible"
+  nzTitle="{{ updateModalTitle }}"
+  (nzOnCancel)="handleUpdateCancel()"
+  (nzOnOk)="handleUpdateOk()"
+>
+  <p>
+    <i nz-icon nzType="user" nzTheme="outline"></i> 姓名&nbsp;
+    {{ studentProfileInfo.name }}
+  </p>
+  <p>
+    <i nz-icon nzType="tag" nzTheme="outline"></i> 学号&nbsp;
+    {{ studentProfileInfo.studentNumber }}
+  </p>
+  <p>
+    <i nz-icon nzType="team" nzTheme="outline"></i> 班级&nbsp;
+    {{ studentProfileInfo.classNumber }}
+  </p>
+  <p>
+    <i nz-icon nzType="mail" nzTheme="outline"></i> Mail &nbsp;
+    {{ studentProfileInfo.email == null ? '未填写' : studentProfileInfo.email }}
+  </p>
+  <p>
+    <i nz-icon nzType="phone" nzTheme="outline"></i> 电话 &nbsp;
+    {{ studentProfileInfo.phone == null ? '未填写' : studentProfileInfo.phone }}
+  </p>
+  <p>
+    <i nz-icon nzType="qq" nzTheme="outline"></i> QQ &nbsp;{{
+      studentProfileInfo.qq == null ? '未填写' : studentProfileInfo.qq
+    }}
+  </p>
+</nz-modal>

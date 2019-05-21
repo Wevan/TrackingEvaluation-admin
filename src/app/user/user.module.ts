@@ -7,9 +7,10 @@ import { UserService } from './user.service';
 import { TeacherComponent } from './teacher/teacher.component';
 import { AdminComponent } from './admin/admin.component';
 import { ProfileComponent } from './profile/profile.component';
+import { UpdateModalComponent } from './update-modal/update-modal.component';
 
 @NgModule({
-  declarations: [StudentComponent, TeacherComponent, AdminComponent, ProfileComponent],
+  declarations: [StudentComponent, TeacherComponent, AdminComponent, ProfileComponent, UpdateModalComponent],
   imports: [SharedModule, UserRoutingModule],
   providers: [UserService],
 })
