@@ -19,7 +19,11 @@ export class CollegeService {
     return this.http.get<Result>('/college/all');
   }
 
-  deleteOne(id: number) {
+  deleteOne(id: number): Observable<Result> {
     return this.http.delete<Result>('/college/delete/' + id);
+  }
+
+  modifyOne(college: College): Observable<Result> {
+    return this.http.post<Result>('/college/insert', college);
   }
 }

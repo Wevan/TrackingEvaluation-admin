@@ -10,7 +10,7 @@ import { StudentParam } from 'src/app/entity/Params';
   styleUrls: ['./student.component.scss'],
 })
 export class StudentComponent implements OnInit {
-
+  size = 'default';
   constructor(private fb: FormBuilder, private userService: UserService) {}
   validateForm: FormGroup;
   dataSet = [];
@@ -87,7 +87,7 @@ export class StudentComponent implements OnInit {
 
   handleOk(): void {
     this.isOkLoading = true;
-    for (const i in this.validateForm.controls) {
+    for (const i of Object.keys(this.validateForm.controls)) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }

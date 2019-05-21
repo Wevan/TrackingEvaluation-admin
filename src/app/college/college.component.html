@@ -1,14 +1,5 @@
 <button nz-button nzType="default" (click)="addCollege()">添加</button>
-<button nz-button nzType="default">批量添加</button>
-<button
-  nz-button
-  nzType="primary"
-  [nzSize]="size"
-  nzShape="round"
-  (click)="download()"
->
-  <i nz-icon type="download"></i>下载模板
-</button>
+
 <nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
 
 <!-- 信息展示表格 -->
@@ -29,9 +20,9 @@
     <td>{{ item.major }}</td>
     <td><span nz-tooltip nzTitle="{{ item.summary }}">{{ item.summary }}</span></td>
     <td>
-      <a>修改</a>
+      <a (click)="beforeModify(item.id,item.major,item.name,item.summary)">修改</a>
       <nz-divider nzType="vertical"></nz-divider>
-      <a (click)="deleteOne(item.id,i)">删除</a>
+      <a (click)="deleteOne(item.id)">删除</a>
     </td>
   </tr>
   </tbody>
@@ -40,7 +31,7 @@
 <!-- 单个专业添加 模态框 -->
 <nz-modal
   [(nzVisible)]="isVisible"
-  nzTitle="Modal Title"
+  nzTitle="添加专业"
   (nzOnCancel)="handleCancel()"
   (nzOnOk)="handleOk()"
   [nzOkLoading]="isOkLoading">
@@ -87,6 +78,63 @@
                   placeholder="专业介绍"
                   [(ngModel)]="value"
                   [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+        ></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<!-- 修改专业 模态框 -->
+<nz-modal
+  [(nzVisible)]="misVisible"
+  nzTitle="修改专业"
+  (nzOnCancel)="mhandleCancel()"
+  (nzOnOk)="mhandleOk()"
+  [nzOkLoading]="misOkLoading">
+  <form nz-form [formGroup]="mvalidateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="mmajorName">
+        专业名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input formControlName="mmajorName" id="mmajorName" value="{{mmajor}}"/>
+        <nz-form-explain
+          *ngIf="
+            mvalidateForm.get('mmajorName')?.dirty &&
+            mvalidateForm.get('mmajorName')?.errors
+          ">
+          专业必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="mcollegeName" nzRequired
+      >学院
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="mcollegeName" formControlName="mcollegeName" value="{{mname}}"/>
+        <nz-form-explain
+          *ngIf="
+            mvalidateForm.get('mcollegeName')?.dirty &&
+            mvalidateForm.get('mcollegeName')?.errors
+          ">
+          学院必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="mcollegeDescription" nzRequired>
+        <span>
+          专业介绍
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <textarea id="mcollegeDescription" formControlName="mcollegeDescription"
+                  nz-input
+                  placeholder="专业介绍"
+                  [(ngModel)]="mvalue"
+                  [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                  value="{{msummary}}"
         ></textarea>
       </nz-form-control>
     </nz-form-item>

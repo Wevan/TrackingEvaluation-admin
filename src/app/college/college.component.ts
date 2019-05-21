@@ -19,33 +19,29 @@ export class CollegeComponent implements OnInit {
   isVisible = false;
   isOkLoading = false;
 
-  listOfData = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-    },
-  ];
+  listOfData = [];
   value: 'string';
+  mvalue: 'string';
+
+  // 修改部分的模态框
+  misVisible = false;
+  misOkLoading = false;
+  mvalidateForm: FormGroup;
+  mname = '';
+  mmajor = '';
+  msummary = '';
+  mid = 0;
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
       majorName: [null, [Validators.required]],
       collegeName: [null, [Validators.required]],
       collegeDescription: [null, [Validators.required]],
+    });
+    this.mvalidateForm = this.fb.group({
+      mmajorName: [null, [Validators.required]],
+      mcollegeName: [null, [Validators.required]],
+      mcollegeDescription: [null, [Validators.required]],
     });
     this.getList();
   }
@@ -110,9 +106,7 @@ export class CollegeComponent implements OnInit {
     );
   }
 
-  deleteOne(id: number, index: number) {
-    console.log('id', id, ',index', index);
-    this.listOfData.splice(index, 1);
+  deleteOne(id: number) {
     this.collegeService.deleteOne(id).subscribe(
       next => {
         this.listOfData = [];
@@ -123,6 +117,63 @@ export class CollegeComponent implements OnInit {
         console.log(err);
       }
     );
+  }
+
+  beforeModify(id: number, major: string, name: string, summary: string) {
+    this.misVisible = true;
+    this.mname = name;
+    this.mmajor = major;
+    this.msummary = summary;
+    this.mid = id;
+  }
+
+  mhandleOk(): void {
+    let mmajorName = this.mvalidateForm.get('mmajorName').value;
+    let mcollegeName = this.mvalidateForm.get('mcollegeName').value;
+    let mcollegeDescription = this.mvalidateForm.get('mcollegeDescription').value;
+    if (mmajorName === null) {
+      mmajorName = this.mmajor;
+    }
+    if (mcollegeName === null) {
+      mcollegeName = this.mname;
+    }
+    if (mcollegeDescription === null) {
+      mcollegeDescription = this.msummary;
+    }
+
+    const college = new College();
+    college.name = mcollegeName;
+    college.summary = mcollegeDescription;
+    college.major = mmajorName;
+    college.id = this.mid;
+    this.collegeService.modifyOne(college).subscribe(
+      next => {
+        this.listOfData = [];
+        this.listOfData = next.data;
+        console.log(next);
+      },
+      (err: Error) => {
+        console.log(err);
+      },
+      () => {
+        this.misOkLoading = false;
+        this.misVisible = false;
+        this.mname = '';
+        this.mmajor = '';
+        this.msummary = '';
+        this.mid = 0;
+
+      }
+    );
+  }
+
+  mhandleCancel(): void {
+    this.mvalidateForm.reset();
+    this.misVisible = false;
+    this.mname = '';
+    this.mmajor = '';
+    this.msummary = '';
+    this.mid = 0;
   }
 
 }

@@ -67,7 +67,7 @@ export class TeacherComponent implements OnInit {
 
   handleOk(): void {
     this.isOkLoading = true;
-    for (const i in this.validateForm.controls) {
+    for (const i of Object.keys(this.validateForm.controls)) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
@@ -78,7 +78,7 @@ export class TeacherComponent implements OnInit {
     teacherParam.positionId = positionId;
     teacherParam.teacherName = teacherName;
     teacherParam.teacherNum = teacherNumber;
-    //提交教师信息
+    // 提交教师信息
     this.userService.addTeacher(teacherParam).subscribe(() => {
       this.isVisible = false;
       this.isOkLoading = false;
@@ -94,11 +94,11 @@ export class TeacherComponent implements OnInit {
 
     this.userService.downExcle().subscribe(res => {
       console.log(res);
-      let file = new File([res], 'mm.xml', {
+      const file = new File([res], 'mm.xml', {
         type: 'application/vnd.ms-excel',
       });
       console.log('file is ', file);
-      var objUrl = URL.createObjectURL(res);
+      const objUrl = URL.createObjectURL(res);
       window.open(objUrl);
       URL.revokeObjectURL(objUrl);
     });
