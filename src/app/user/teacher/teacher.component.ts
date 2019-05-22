@@ -45,15 +45,7 @@ export class TeacherComponent implements OnInit {
     this.userService.getAll('teachers').subscribe(
       (result: Result) => {
         console.log('result teacher ', result.data);
-        result.data.forEach(element => {
-          this.dataSet.push({
-            id: element.id,
-            teacherName: element.name,
-            teacherNumber: element.teacherNumber,
-            position: element.position,
-            positionId: element.positionId,
-          });
-        });
+        this.dataSet = result.data;
       },
       () => {
         console.log('teacher ', this.dataSet);

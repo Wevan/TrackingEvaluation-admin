@@ -1,12 +1,17 @@
-import { UserService } from './../user.service';
+import {
+  HttpClient,
+  HttpRequest,
+  HttpEvent,
+  HttpResponse,
+  HttpEventType,
+} from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { Result } from 'src/app/entity/Result';
-import { StudentParam } from 'src/app/entity/Params';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UploadFile, UploadXHRArgs } from 'ng-zorro-antd';
 import { StudentInfo, StudentProfileInfo } from 'src/app/entity/Info';
-import { HttpRequest, HttpClient, HttpResponse } from '@angular/common/http';
-import { filter } from 'rxjs/operators';
-import { UploadFile } from 'ng-zorro-antd';
+import { StudentParam } from 'src/app/entity/Params';
+import { Result } from 'src/app/entity/Result';
+import { UserService } from './../user.service';
 
 @Component({
   selector: 'app-student',
@@ -66,34 +71,35 @@ export class StudentComponent implements OnInit {
   addStudent(): void {
     this.isVisible = true;
   }
-  studentFileList: FileList;
-  handleUpload(): void {
-    let body = new FormData();
-    const req = new HttpRequest('POST', `/file/excel/student`, body);
+  studentFileList: UploadFile[] = [];
 
-    // body.append('file', this.studentFileList.item);
+  /**
+   * 定制的上传方法
+   */
+  customRequest = (item: UploadXHRArgs) => {
+    const formData = new FormData();
+    formData.append('excel', item.file as any);
+    const req = new HttpRequest('POST', `/file/excel/student`, formData, {
+      reportProgress: true,
+    });
+    return this.http.request(req).subscribe(
+      (event: HttpEvent<{}>) => {
+        console.log('event |> ', event);
 
-    // body.append('file', item.file);
-    this.http.post<Result>(`/file/excel/student`, body).subscribe(
-      (result: Result) => {
-        console.log('result is ', result);
+        if (event.type === HttpEventType.UploadProgress) {
+          if (event.total > 0) {
+            (event as any).percent = (event.loaded / event.total) * 100;
+          }
+          item.onProgress(event, item.file);
+        } else if (event instanceof HttpResponse) {
+          item.onSuccess(event.body, item.file, event);
+        }
       },
-      (error: Error) => {
-        console.log('error == ', error);
+      err => {
+        item.onError(err, item.file);
       },
     );
-    // this.http
-    //   .request<Result>(req)
-    //   .pipe(filter(e => e instanceof HttpResponse))
-    //   .subscribe(
-    //     () => {
-    //       console.log('upload success');
-    //     },
-    //     (error: Error) => {
-    //       console.log('error == ', error);
-    //     },
-    //   );
-  }
+  };
 
   /**
    * 确定后上传数据 进行单个添加
@@ -125,16 +131,21 @@ export class StudentComponent implements OnInit {
   download() {
     console.log('下载');
 
-    this.userService.downExcle().subscribe(res => {
-      console.log(res);
-      const file = new File([res], 'mm.xml', {
-        type: 'application/vnd.ms-excel',
-      });
-      console.log('file is ', file);
-      const objUrl = URL.createObjectURL(res);
-      window.open(objUrl);
-      URL.revokeObjectURL(objUrl);
-    });
+    this.userService.downExcle().subscribe(
+      res => {
+        const objUrl = URL.createObjectURL(res);
+        var a = document.createElement('a');
+        document.body.appendChild(a);
+        a.setAttribute('style', 'display:none');
+        a.setAttribute('href', objUrl);
+        a.setAttribute('download', '学生模板.xlsx');
+        a.click();
+        URL.revokeObjectURL(objUrl);
+      },
+      error => {
+        console.log('error is ', error);
+      },
+    );
   }
 
   openProfile(studentInfo: StudentInfo) {
