@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
 import { CollegeTargetComponent } from './college-target/college-target.component';
 
 @NgModule({
-  declarations: [AppComponent, CollegeTargetComponent],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
