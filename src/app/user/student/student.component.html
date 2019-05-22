@@ -14,11 +14,7 @@
     <i nz-icon type="download"></i>下载模板
   </button>
 </ng-container>
-<nz-upload
-  (nzChange)="handleUpload()"
-  [(nzFileList)]="studentFileList"
-  class="btn-upload"
->
+<nz-upload class="btn-upload" [nzCustomRequest]="customRequest">
   <button nz-button>
     <i nz-icon nzType="upload"></i><span>点击上传</span>
   </button>
