@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {log} from 'util';
-import {College} from '../entity/College';
 import {CollegeTargetService} from './college-target.service';
+import {CollegeResponse} from '../entity/CollegeResponse';
+import {CollegeTarget} from '../entity/CollegeTarget';
 
 @Component({
   selector: 'app-college-target',
@@ -14,35 +15,24 @@ export class CollegeTargetComponent implements OnInit {
   constructor(private fb: FormBuilder, private collegeTargetService: CollegeTargetService) {
   }
 
-  size = 'default';
   validateForm: FormGroup;
   isVisible = false;
   isOkLoading = false;
-
-  listOfData = [];
   listOfCollege = [];
+  // 专业目标按照专业的分组列表
+  listOfTarget: Array<CollegeResponse> = [];
   value: 'string';
-  mvalue: 'string';
 
-  // 修改部分的模态框
-  misVisible = false;
-  misOkLoading = false;
-  mvalidateForm: FormGroup;
-  mname = '';
-  mmajor = '';
-  msummary = '';
-  mid = 0;
+  selectedCollege = null;
+  selectedRAbility = null;
+
+  listOfRAbility = [];
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
       majorName: [null, [Validators.required]],
-      collegeName: [null, [Validators.required]],
-      collegeDescription: [null, [Validators.required]],
-    });
-    this.mvalidateForm = this.fb.group({
-      mmajorName: [null, [Validators.required]],
-      mcollegeName: [null, [Validators.required]],
-      mcollegeDescription: [null, [Validators.required]],
+      graduateName: [null, [Validators.required]],
+      collegeTarget: [null, [Validators.required]],
     });
     this.getList();
   }
@@ -54,6 +44,7 @@ export class CollegeTargetComponent implements OnInit {
   addCollegeTarget(): void {
     this.isVisible = true;
     this.getCollegeList();
+    // this.getRAbilityList();
   }
 
   getCollegeList() {
@@ -61,7 +52,7 @@ export class CollegeTargetComponent implements OnInit {
       next => {
         if (next.code === 200) {
           this.listOfCollege = next.data;
-          console.log(next);
+          console.log('getCollegeList', next);
         }
       },
       (err: Error) => {
@@ -71,22 +62,27 @@ export class CollegeTargetComponent implements OnInit {
   }
 
   handleOk(): void {
-    log('ok');
-    // this.isOkLoading = true;
     const majorName = this.validateForm.get('majorName').value;
-    const collegeName = this.validateForm.get('collegeName').value;
-    const collegeDescription = this.validateForm.get('collegeDescription').value;
+    // const graduateName = this.validateForm.get('graduateName').value;
+    const collegeTarget = this.validateForm.get('collegeTarget').value;
+    const regex = /\[(.+?)\]/g;
+    const options = collegeTarget.match(regex);
     const list = [];
-    const college = new College();
-    college.name = collegeName;
-    college.summary = collegeDescription;
-    college.major = majorName;
-    list.push(college);
-    list.push(college);
+    options.forEach(
+      item => {
+        const afterDeal = item.replace(/\[|]/g, '');
+        const tempArray = afterDeal.split('/');
+        const collegeTargetEntity = new CollegeTarget();
+        collegeTargetEntity.name = tempArray[0];
+        collegeTargetEntity.percent = tempArray[1];
+        collegeTargetEntity.collegeId = majorName;
+        list.push(collegeTargetEntity);
+      }
+    );
     this.collegeTargetService.addCollegeTarget(list).subscribe(
       next => {
         if (next.code === 200) {
-          console.log(next);
+          console.log('Target', next);
         }
       },
       (err: Error) => {
@@ -99,6 +95,23 @@ export class CollegeTargetComponent implements OnInit {
       }
     );
     this.validateForm.reset();
+    this.isVisible = false;
+    this.listOfTarget = [];
+    this.getList();
+  }
+
+  getRAbilityList() {
+    this.collegeTargetService.getRAbilityList().subscribe(
+      next => {
+        if (next.code === 200) {
+          this.listOfRAbility = next.data;
+          console.log('getRAbilityList', next);
+        }
+      },
+      (err: Error) => {
+        console.log(err);
+      }
+    );
   }
 
   handleCancel(): void {
@@ -112,8 +125,8 @@ export class CollegeTargetComponent implements OnInit {
   getList() {
     this.collegeTargetService.getTargetList().subscribe(
       next => {
-        this.listOfData = next.data;
-        console.log(next);
+        this.listOfTarget = next.data;
+        console.log('TargetList', next);
       },
       (err: Error) => {
         console.log(err);
@@ -134,60 +147,5 @@ export class CollegeTargetComponent implements OnInit {
   //   );
   // }
 
-  beforeModify(id: number, major: string, name: string, summary: string) {
-    this.misVisible = true;
-    this.mname = name;
-    this.mmajor = major;
-    this.msummary = summary;
-    this.mid = id;
-  }
 
-  mhandleOk(): void {
-    let mmajorName = this.mvalidateForm.get('mmajorName').value;
-    let mcollegeName = this.mvalidateForm.get('mcollegeName').value;
-    let mcollegeDescription = this.mvalidateForm.get('mcollegeDescription').value;
-    if (mmajorName === null) {
-      mmajorName = this.mmajor;
-    }
-    if (mcollegeName === null) {
-      mcollegeName = this.mname;
-    }
-    if (mcollegeDescription === null) {
-      mcollegeDescription = this.msummary;
-    }
-
-    const college = new College();
-    college.name = mcollegeName;
-    college.summary = mcollegeDescription;
-    college.major = mmajorName;
-    college.id = this.mid;
-    // this.collegeService.modifyOne(college).subscribe(
-    //   next => {
-    //     this.listOfData = [];
-    //     this.listOfData = next.data;
-    //     console.log(next);
-    //   },
-    //   (err: Error) => {
-    //     console.log(err);
-    //   },
-    //   () => {
-    //     this.misOkLoading = false;
-    //     this.misVisible = false;
-    //     this.mname = '';
-    //     this.mmajor = '';
-    //     this.msummary = '';
-    //     this.mid = 0;
-    //
-    //   }
-    // );
-  }
-
-  mhandleCancel(): void {
-    this.mvalidateForm.reset();
-    this.misVisible = false;
-    this.mname = '';
-    this.mmajor = '';
-    this.msummary = '';
-    this.mid = 0;
-  }
 }
