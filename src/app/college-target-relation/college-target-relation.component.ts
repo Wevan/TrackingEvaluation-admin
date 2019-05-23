@@ -1,17 +1,17 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {CollegeTargetService} from './college-target.service';
+import {CollegeTargetRelationService} from './college-target-relation.service';
 import {CollegeResponse} from '../entity/CollegeResponse';
 import {CollegeTarget} from '../entity/CollegeTarget';
 
 @Component({
-  selector: 'app-college-target',
-  templateUrl: './college-target.component.html',
-  styleUrls: ['./college-target.component.scss']
+  selector: 'app-college-target-relation',
+  templateUrl: './college-target-relation.component.html',
+  styleUrls: ['./college-target-relation.component.scss']
 })
-export class CollegeTargetComponent implements OnInit {
+export class CollegeTargetRelationComponent implements OnInit {
 
-  constructor(private fb: FormBuilder, private collegeTargetService: CollegeTargetService) {
+  constructor(private fb: FormBuilder, private collegeTargetRelationService: CollegeTargetRelationService) {
   }
 
   validateForm: FormGroup;
@@ -33,21 +33,21 @@ export class CollegeTargetComponent implements OnInit {
       graduateName: [null, [Validators.required]],
       collegeTarget: [null, [Validators.required]],
     });
-    this.getList();
+    // this.getList();
   }
 
   /**
    * 添加专业目标
    */
 
-  addCollegeTarget(): void {
+  addCollegeAndAbility(): void {
     this.isVisible = true;
-    this.getCollegeList();
+    // this.getCollegeList();
     // this.getRAbilityList();
   }
 
   getCollegeList() {
-    this.collegeTargetService.getCollegeList().subscribe(
+    this.collegeTargetRelationService.getCollegeList().subscribe(
       next => {
         if (next.code === 200) {
           this.listOfCollege = next.data;
@@ -78,7 +78,7 @@ export class CollegeTargetComponent implements OnInit {
         list.push(collegeTargetEntity);
       }
     );
-    this.collegeTargetService.addCollegeTarget(list).subscribe(
+    this.collegeTargetRelationService.addCollegeAndAbility(list).subscribe(
       next => {
         if (next.code === 200) {
           console.log('Target', next);
@@ -100,7 +100,7 @@ export class CollegeTargetComponent implements OnInit {
   }
 
   getRAbilityList() {
-    this.collegeTargetService.getRAbilityList().subscribe(
+    this.collegeTargetRelationService.getRAbilityList().subscribe(
       next => {
         if (next.code === 200) {
           this.listOfRAbility = next.data;
@@ -122,7 +122,7 @@ export class CollegeTargetComponent implements OnInit {
    * 获取专业列表
    */
   getList() {
-    this.collegeTargetService.getTargetList().subscribe(
+    this.collegeTargetRelationService.getTargetList().subscribe(
       next => {
         this.listOfTarget = next.data;
         console.log('TargetList', next);
@@ -132,19 +132,5 @@ export class CollegeTargetComponent implements OnInit {
       }
     );
   }
-
-  // deleteOne(id: number) {
-  //   this.collegeTargetService.deleteOne(id).subscribe(
-  //     next => {
-  //       this.listOfData = [];
-  //       this.listOfData = next.data;
-  //       console.log(next);
-  //     },
-  //     (err: Error) => {
-  //       console.log(err);
-  //     }
-  //   );
-  // }
-
 
 }
