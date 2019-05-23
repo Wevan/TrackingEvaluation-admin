@@ -85,23 +85,6 @@ export class TeacherComponent implements OnInit {
     this.isVisible = false;
   }
 
-  download() {
-    this.userService.downExcle().subscribe(
-      res => {
-        const objUrl = URL.createObjectURL(res);
-        var a = document.createElement('a');
-        document.body.appendChild(a);
-        a.setAttribute('style', 'display:none');
-        a.setAttribute('href', objUrl);
-        a.setAttribute('download', '教师模板.xlsx');
-        a.click();
-        URL.revokeObjectURL(objUrl);
-      },
-      error => {
-        console.log('error is ', error);
-      },
-    );
-  }
   showModalTitle: string = '';
   isShowVisible: boolean = false;
   teacherProfileInfo: TeacherProfileInfo = new TeacherProfileInfo();

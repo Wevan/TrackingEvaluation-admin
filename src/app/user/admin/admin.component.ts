@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UserService } from './../user.service';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Result } from 'src/app/entity/Result';
-import { TeacherParam } from 'src/app/entity/Params';
+import { TeacherParam, TeacherRoleParam } from 'src/app/entity/Params';
 
 @Component({
   selector: 'app-admin',
@@ -28,41 +28,37 @@ export class AdminComponent implements OnInit {
       teacherName: [null, [Validators.required]],
       teacherNumber: [null, [Validators.required]],
     });
-    const children: Array<{ label: string; value: string }> = [];
     // 获取班级的请求
-    this.userService.getPosition().subscribe((result: Result) => {
-      console.log('position is ', result);
-      for (let i = 0; i < result.data.length; i++) {
-        children.push({
-          label: result.data[i].name,
-          value: result.data[i].id,
-        });
-      }
-      this.listOfOption = children;
-    });
 
-    // 获取所有学生
-    this.userService.getAll('teachers').subscribe(
+    // 获取所有教师
+    this.userService.getTeacherRole().subscribe(
       (result: Result) => {
         console.log('result teacher ', result.data);
-        result.data.forEach(element => {
-          this.dataSet.push({
-            id: element.id,
-            teacherName: element.name,
-            teacherNumber: element.teacherNumber,
-            position: element.position,
-            positionId: element.positionId,
-          });
-        });
+        this.dataSet = result.data;
       },
       () => {
         console.log('teacher ', this.dataSet);
       },
     );
   }
-
-  add(): void {
+  updateTeacherId: number;
+  openUpdate(data): void {
     this.isVisible = true;
+    this.validateForm.get('teacherName').setValue(data.name);
+    this.updateTeacherId = data.id;
+    this.validateForm.get('teacherNumber').setValue(data.jobNumber);
+    const children: Array<{ label: string; value: string }> = [];
+
+    this.userService.getAllRole().subscribe((result: Result) => {
+      console.log('roles is ', result);
+      for (let i = 0; i < result.data.length; i++) {
+        children.push({
+          label: result.data[i].about,
+          value: result.data[i].id,
+        });
+      }
+      this.listOfOption = children;
+    });
   }
 
   handleOk(): void {
@@ -71,15 +67,12 @@ export class AdminComponent implements OnInit {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
-    const teacherName = this.validateForm.get('teacherName').value;
-    const teacherNumber = this.validateForm.get('teacherNumber').value;
-    const positionId = this.validateForm.get('positionId').value;
-    const teacherParam = new TeacherParam();
-    teacherParam.positionId = positionId;
-    teacherParam.teacherName = teacherName;
-    teacherParam.teacherNum = teacherNumber;
-    // 提交教师信息
-    this.userService.addTeacher(teacherParam).subscribe(() => {
+    var teacherRoleParam = new TeacherRoleParam();
+    teacherRoleParam.roleId = this.listOfTagOptions;
+    teacherRoleParam.teacherId = this.updateTeacherId;
+    this.updateTeacherId = -1;
+    // 更新教师权限信息
+    this.userService.updateTeacherRole(teacherRoleParam).subscribe(() => {
       this.isVisible = false;
       this.isOkLoading = false;
     });

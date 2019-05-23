@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Result } from '../entity/Result';
-import { StudentParam, TeacherParam } from '../entity/Params';
+import { StudentParam, TeacherParam, TeacherRoleParam } from '../entity/Params';
 
 @Injectable()
 export class UserService {
@@ -45,5 +45,23 @@ export class UserService {
     teacherParam: TeacherParam,
   ): Observable<Result> {
     return this.http.put<Result>(`/teacher/${teacherId}`, teacherParam);
+  }
+
+  /**
+   * 获得所有的教师角色信息
+   */
+  getTeacherRole(): Observable<Result> {
+    return this.http.get<Result>(`/teacher/role`);
+  }
+
+  /**
+   * 获取所有的权限
+   */
+  getAllRole(): Observable<Result> {
+    return this.http.get<Result>(`/roles`);
+  }
+
+  updateTeacherRole(teacherRoleParam: TeacherRoleParam): Observable<Result> {
+    return this.http.put<Result>(``, teacherRoleParam);
   }
 }

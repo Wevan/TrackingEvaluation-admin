@@ -13,3 +13,16 @@ export class TeacherParam {
   positionId: number;
   sex: number;
 }
+/**
+ * 教师权限更新参数
+ */
+export class TeacherRoleParam {
+  /**
+   * 教师id
+   */
+  teacherId: number;
+  /**
+   * 权限id
+   */
+  roleId: Array<number>[];
+}

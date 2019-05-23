@@ -1,32 +1,25 @@
 <!-- 教师信息表格 -->
-<nz-table
-  #basicTable
-  [nzData]="dataSet"
-  [nzFrontPagination]="true"
-  [(nzPageSize)]="pageSize"
-  [(nzPageIndex)]="pageIndex"
-  nzShowPagination
-  nzShowSizeChanger
->
+<nz-table #basicTable [nzData]="dataSet" [nzFrontPagination]="true">
   <thead>
     <tr>
       <th>序号</th>
       <th>姓名</th>
+      <th>工号</th>
       <th>权限</th>
       <th>职位</th>
       <th>操作</th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let data of dataSet; let i = index">
+    <tr *ngFor="let data of basicTable.data; let i = index">
       <td>{{ i + 1 }}</td>
-      <td>{{ data.teacherName }}</td>
-      <td>{{ data.teacherNumber }}</td>
+      <td>{{ data.name }}</td>
+      <td>{{ data.jobNumber }}</td>
+      <td>{{ data.role }}</td>
       <td>{{ data.position }}</td>
       <td>
-        <a>更新权限</a>
+        <a (click)="openUpdate(data)">更新权限</a>
         <nz-divider nzType="vertical"></nz-divider>
-        <a>Delete</a>
       </td>
     </tr>
   </tbody>
@@ -46,7 +39,12 @@
         >工号</nz-form-label
       >
       <nz-form-control [nzSm]="14" [nzXs]="24">
-        <input nz-input formControlName="teacherNumber" id="teacherNumber" />
+        <input
+          nz-input
+          formControlName="teacherNumber"
+          id="teacherNumber"
+          disabled
+        />
         <nz-form-explain
           *ngIf="
             validateForm.get('teacherNumber')?.dirty &&
@@ -62,7 +60,12 @@
         >姓名</nz-form-label
       >
       <nz-form-control [nzSm]="14" [nzXs]="24">
-        <input nz-input id="teacherName" formControlName="teacherName" />
+        <input
+          nz-input
+          id="teacherName"
+          formControlName="teacherName"
+          disabled
+        />
         <nz-form-explain
           *ngIf="
             validateForm.get('teacherName')?.dirty &&
@@ -76,15 +79,16 @@
     <nz-form-item>
       <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="nickname" nzRequired>
         <span>
-          职位
+          权限
         </span>
       </nz-form-label>
       <nz-form-control [nzSm]="14" [nzXs]="24">
         <nz-select
           style="width: 100%;"
           nzShowSearch="true"
-          nzPlaceHolder="选择职位"
+          nzPlaceHolder="选择权限"
           [(ngModel)]="listOfTagOptions"
+          nzMode="multiple"
           formControlName="positionId"
         >
           <nz-option
