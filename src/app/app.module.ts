@@ -8,6 +8,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CollegeTargetComponent } from './college-target/college-target.component';
+import { CollegeTargetRelationComponent } from './college-target-relation/college-target-relation.component';
 
 @NgModule({
   declarations: [AppComponent],
