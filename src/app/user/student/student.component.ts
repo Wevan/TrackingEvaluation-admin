@@ -38,6 +38,7 @@ export class StudentComponent implements OnInit {
   listOfData: Array<StudentInfo> = [];
   studentProfileInfo = new StudentProfileInfo();
   updateModalTitle: string = '';
+  studentFileList: UploadFile[] = [];
   ngOnInit(): void {
     this.validateForm = this.fb.group({
       classId: [null, [Validators.required]],
@@ -71,7 +72,6 @@ export class StudentComponent implements OnInit {
   addStudent(): void {
     this.isVisible = true;
   }
-  studentFileList: UploadFile[] = [];
 
   /**
    * 定制的上传方法
@@ -129,8 +129,6 @@ export class StudentComponent implements OnInit {
   }
 
   download() {
-    console.log('下载');
-
     this.userService.downExcle().subscribe(
       res => {
         const objUrl = URL.createObjectURL(res);

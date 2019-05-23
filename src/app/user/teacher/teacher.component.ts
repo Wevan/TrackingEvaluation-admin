@@ -3,6 +3,8 @@ import { UserService } from './../user.service';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Result } from 'src/app/entity/Result';
 import { StudentParam, TeacherParam } from 'src/app/entity/Params';
+import { TeacherInfo, TeacherProfileInfo } from 'src/app/entity/Info';
+import { locale } from 'core-js';
 
 @Component({
   selector: 'app-teacher',
@@ -16,7 +18,7 @@ export class TeacherComponent implements OnInit {
   pageIndex = 1;
   isVisible = false;
   isOkLoading = false;
-
+  sexOptions: number;
   listOfOption: Array<{ label: string; value: string }> = [];
   listOfTagOptions = [];
 
@@ -27,11 +29,11 @@ export class TeacherComponent implements OnInit {
       positionId: [null, [Validators.required]],
       teacherName: [null, [Validators.required]],
       teacherNumber: [null, [Validators.required]],
+      teacherSex: [null, [Validators.required]],
     });
     const children: Array<{ label: string; value: string }> = [];
     // 获取班级的请求
     this.userService.getPosition().subscribe((result: Result) => {
-      console.log('position is ', result);
       for (let i = 0; i < result.data.length; i++) {
         children.push({
           label: result.data[i].name,
@@ -70,6 +72,8 @@ export class TeacherComponent implements OnInit {
     teacherParam.positionId = positionId;
     teacherParam.teacherName = teacherName;
     teacherParam.teacherNum = teacherNumber;
+    teacherParam.sex = this.sexOptions;
+    console.log('sex => ', this.sexOptions);
     // 提交教师信息
     this.userService.addTeacher(teacherParam).subscribe(() => {
       this.isVisible = false;
@@ -82,17 +86,89 @@ export class TeacherComponent implements OnInit {
   }
 
   download() {
-    console.log('下载');
-
-    this.userService.downExcle().subscribe(res => {
-      console.log(res);
-      const file = new File([res], 'mm.xml', {
-        type: 'application/vnd.ms-excel',
+    this.userService.downExcle().subscribe(
+      res => {
+        const objUrl = URL.createObjectURL(res);
+        var a = document.createElement('a');
+        document.body.appendChild(a);
+        a.setAttribute('style', 'display:none');
+        a.setAttribute('href', objUrl);
+        a.setAttribute('download', '教师模板.xlsx');
+        a.click();
+        URL.revokeObjectURL(objUrl);
+      },
+      error => {
+        console.log('error is ', error);
+      },
+    );
+  }
+  showModalTitle: string = '';
+  isShowVisible: boolean = false;
+  teacherProfileInfo: TeacherProfileInfo = new TeacherProfileInfo();
+  openProfile(teacherInfo: TeacherInfo) {
+    console.log('teacher id ', teacherInfo);
+    this.showModalTitle = teacherInfo.name;
+    this.isShowVisible = true;
+    this.userService
+      .getTeacherProfile(teacherInfo.id)
+      .subscribe((result: Result) => {
+        this.teacherProfileInfo = result.data;
+        console.log('result teacher profile ', this.teacherProfileInfo);
       });
-      console.log('file is ', file);
-      const objUrl = URL.createObjectURL(res);
-      window.open(objUrl);
-      URL.revokeObjectURL(objUrl);
-    });
+  }
+  handleShowCancel() {
+    this.isShowVisible = false;
+  }
+
+  handleShowOk() {
+    this.isShowVisible = false;
+  }
+
+  isUpdateVisible = false;
+  updateTeacherId = -1;
+  openUpdate(teacherInfo: TeacherInfo) {
+    console.log('teacher id ', teacherInfo);
+    this.updateTeacherId = teacherInfo.id;
+    // document.getElementById('teacher_id_visible'). = teacherInfo.id.toString;
+    this.isUpdateVisible = true;
+    this.validateForm.get('teacherName').setValue(teacherInfo.name);
+    this.validateForm.get('teacherNumber').setValue(teacherInfo.teacherNumber);
+    this.sexOptions = teacherInfo.sex == '男' ? 1 : 0;
+    this.listOfTagOptions = [teacherInfo.positionId];
+    // this.validateForm.get('teacherSex').setValue(teacherInfo.sex);
+
+    // 更新
+  }
+  handleUpdateOk() {
+    this.isUpdateOkLoading = true;
+    for (const i of Object.keys(this.validateForm.controls)) {
+      this.validateForm.controls[i].markAsDirty();
+      this.validateForm.controls[i].updateValueAndValidity();
+    }
+    var teacherParam = new TeacherParam();
+    teacherParam.teacherName = this.validateForm.get('teacherName').value;
+    teacherParam.teacherNum = this.validateForm.get('teacherNumber').value;
+    teacherParam.sex = this.sexOptions; // this.validateForm.get('teacherNumber').value
+    teacherParam.positionId = this.validateForm.get('positionId').value;
+    this.userService
+      .updateTeacherInfo(this.updateTeacherId, teacherParam)
+      .subscribe(
+        (result: Result) => {
+          console.log('result => ', result);
+        },
+        error => {
+          console.log('error ', error);
+        },
+        () => {
+          this.isUpdateVisible = false;
+          this.isUpdateOkLoading = false;
+          location.reload();
+        },
+      );
+    this.updateTeacherId = -1;
+  }
+  isUpdateOkLoading = false;
+  handleUpdateCancel() {
+    this.isUpdateVisible = false;
   }
 }

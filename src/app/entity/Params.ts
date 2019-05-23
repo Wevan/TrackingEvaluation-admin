@@ -11,4 +11,5 @@ export class TeacherParam {
   teacherName: string;
   teacherNum: string;
   positionId: number;
+  sex: number;
 }

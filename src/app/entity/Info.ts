@@ -41,3 +41,42 @@ export class StudentProfileInfo {
    */
   classNumber: String;
 }
+/**
+ * 在列表上的教师信息
+ *
+ */
+export class TeacherInfo {
+  /**
+   * teacher id
+   */
+  id: number;
+  /**
+   * 姓名
+   */
+  name: string;
+  /**
+   * 职位
+   */
+  position: string;
+  /**
+   * 职位id
+   */
+  positionId: number;
+  /**
+   * 教师号
+   */
+  teacherNumber: string;
+
+  sex: string;
+}
+
+/**
+ * 教师详细信息
+ */
+export class TeacherProfileInfo {
+  id: number;
+  name: string;
+  jobNumber: string;
+  sex: string;
+  tel: string;
+}

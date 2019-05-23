@@ -35,4 +35,15 @@ export class UserService {
   getStudentProfile(studentId: number): Observable<Result> {
     return this.http.get<Result>(`/user/student/${studentId}`);
   }
+
+  getTeacherProfile(teacherId: number): Observable<Result> {
+    return this.http.get<Result>(`/user/profile/teacher/${teacherId}`);
+  }
+
+  updateTeacherInfo(
+    teacherId: number,
+    teacherParam: TeacherParam,
+  ): Observable<Result> {
+    return this.http.put<Result>(`/teacher/${teacherId}`, teacherParam);
+  }
 }
