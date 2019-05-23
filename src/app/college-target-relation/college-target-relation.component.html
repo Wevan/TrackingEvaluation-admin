@@ -1,0 +1,109 @@
+<button nz-button nzType="default" (click)="addCollegeAndAbility()">添加</button>
+
+<nz-divider nzText="毕业指标和专业目标的关系" nzOrientation="left"></nz-divider>
+
+<!-- 信息展示表格 -->
+
+<nz-collapse nzAccordion>
+  <nz-collapse-panel *ngFor="let item of listOfTarget" [nzHeader]="item.collegeName">
+    <nz-table #basicTable [nzData]="item.collegeTargetList">
+      <thead>
+      <tr>
+        <th>序号</th>
+        <th>专业目标名称</th>
+        <th>百分比</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let sonitem of basicTable.data;let i=index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ sonitem.name }}</td>
+        <td>{{ sonitem.percent }}</td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </nz-collapse-panel>
+</nz-collapse>
+
+
+<!-- 专业目标添加 模态框 -->
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="添加专业"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading">
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="majorName">
+        专业名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 200px;"
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="选择专业"
+          [(ngModel)]="selectedCollege"
+          formControlName="majorName"
+          id="majorName"
+        >
+          <span *ngFor="let item of listOfCollege;let i=index">
+          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>
+          </span>
+        </nz-select>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('majorName')?.dirty &&
+            validateForm.get('majorName')?.errors
+          ">
+          专业必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <!--    <nz-form-item>-->
+    <!--      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="graduateName">-->
+    <!--        毕业指标名称-->
+    <!--      </nz-form-label>-->
+    <!--      <nz-form-control [nzSm]="14" [nzXs]="24">-->
+    <!--        <nz-select-->
+    <!--          style="width: 200px;"-->
+    <!--          nzShowSearch-->
+    <!--          nzAllowClear-->
+    <!--          nzPlaceHolder="选择毕业指标"-->
+    <!--          [(ngModel)]="selectedRAbility"-->
+    <!--          formControlName="graduateName"-->
+    <!--          id="graduateName"-->
+    <!--        >-->
+    <!--          <span *ngFor="let item of listOfRAbility;let i=index">-->
+    <!--          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>-->
+    <!--          </span>-->
+    <!--        </nz-select>-->
+    <!--        <nz-form-explain-->
+    <!--          *ngIf="-->
+    <!--            validateForm.get('graduateName')?.dirty &&-->
+    <!--            validateForm.get('graduateName')?.errors-->
+    <!--          ">-->
+    <!--          毕业指标必须填写-->
+    <!--        </nz-form-explain>-->
+    <!--      </nz-form-control>-->
+    <!--    </nz-form-item>-->
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="collegeTarget" nzRequired>
+        <span>
+          专业指标
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <textarea id="collegeTarget" formControlName="collegeTarget"
+                  nz-input
+                  placeholder="专业指标多个，请用[]包裹每个专业指标，每个专业指标内含的内容格式为
+eg:[指标内容1/0.3][指标内容2/0.5][指标内容3/0.2]"
+                  [(ngModel)]="value"
+                  [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+        ></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
