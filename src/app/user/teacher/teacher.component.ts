@@ -132,7 +132,8 @@ export class TeacherComponent implements OnInit {
     teacherParam.teacherName = this.validateForm.get('teacherName').value;
     teacherParam.teacherNum = this.validateForm.get('teacherNumber').value;
     teacherParam.sex = this.sexOptions; // this.validateForm.get('teacherNumber').value
-    teacherParam.positionId = this.validateForm.get('positionId').value;
+    teacherParam.positionId = this.listOfTagOptions[0];
+
     this.userService
       .updateTeacherInfo(this.updateTeacherId, teacherParam)
       .subscribe(
