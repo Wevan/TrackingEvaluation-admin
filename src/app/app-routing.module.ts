@@ -17,6 +17,10 @@ const routes: Routes = [
     loadChildren:
       './college-target-relation/college-target-relation.module#CollegeTargetRelationModule',
   },
+  {
+    path: 'class',
+    loadChildren: './class-manager/class-manager.module#ClassManagerModule',
+  },
 ];
 
 @NgModule({

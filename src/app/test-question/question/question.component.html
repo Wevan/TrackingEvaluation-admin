@@ -1,3 +1,157 @@
-<p>
-  question works!
-</p>
+<ng-container class="button-group">
+  <button nz-button nzType="default" (click)="addStudent()" class="btn-add">
+    添加
+  </button>
+
+  <button
+    class="btn-download"
+    nz-button
+    nzType="primary"
+    nzShape="round"
+    (click)="download()"
+  >
+    <i nz-icon type="download"></i>下载模板
+  </button>
+</ng-container>
+<nz-upload class="btn-upload" [nzCustomRequest]="customRequest">
+  <button nz-button>
+    <i nz-icon nzType="upload"></i><span>点击上传</span>
+  </button>
+</nz-upload>
+<nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
+
+<!-- 学生信息表格 -->
+<nz-table
+  #basicTable
+  [nzData]="listOfData"
+  [nzFrontPagination]="true"
+  [(nzPageIndex)]="pageIndex"
+  [(nzPageSize)]="pageSize"
+>
+  <thead>
+    <tr>
+      <th>序号</th>
+      <th class="table-title">题目</th>
+      <th class="table-answer">答案</th>
+      <th class="table-type">类型</th>
+      <th>知识点</th>
+      <th>难度</th>
+      <th>难度</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of basicTable.data; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td class="table-title">{{ data.title }}</td>
+      <td class="table-answer">{{ data.answer }}</td>
+      <td class="table-type">{{ data.category }}</td>
+      <td>{{ data.knowledge }}</td>
+      <td>{{ data.difficulty }}</td>
+      <td>
+        <!-- <button (click)="openProfile(item)">详细信息</button> -->
+        <a (click)="openProfile(data)">
+          详细信息
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+<!-- 单个学生添加 模态框 -->
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="Modal Title"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+>
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="studentNum"
+        >学号</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input formControlName="studentNum" id="studentNum" />
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('studentNum')?.dirty &&
+            validateForm.get('studentNum')?.errors
+          "
+        >
+          学号必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="studentName" nzRequired
+        >姓名</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="studentName" formControlName="studentName" />
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('studentName')?.dirty &&
+            validateForm.get('studentName')?.errors
+          "
+          >请输入姓名!</nz-form-explain
+        >
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="nickname" nzRequired>
+        <span>
+          班级
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 100%;"
+          nzShowSearch="true"
+          nzPlaceHolder="选择班级"
+          [(ngModel)]="listOfTagOptions"
+          formControlName="classId"
+        >
+          <nz-option
+            *ngFor="let option of listOfOption"
+            [nzLabel]="option.label"
+            [nzValue]="option.value"
+          >
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="isUpdateVisible"
+  nzTitle="{{ updateModalTitle }}"
+  (nzOnCancel)="handleUpdateCancel()"
+  (nzOnOk)="handleUpdateOk()"
+>
+  <p>
+    <i nz-icon nzType="user" nzTheme="outline"></i> 姓名&nbsp;
+    {{ studentProfileInfo.name }}
+  </p>
+  <p>
+    <i nz-icon nzType="tag" nzTheme="outline"></i> 学号&nbsp;
+    {{ studentProfileInfo.studentNumber }}
+  </p>
+  <p>
+    <i nz-icon nzType="team" nzTheme="outline"></i> 班级&nbsp;
+    {{ studentProfileInfo.classNumber }}
+  </p>
+  <p>
+    <i nz-icon nzType="mail" nzTheme="outline"></i> Mail &nbsp;
+    {{ studentProfileInfo.email == null ? '未填写' : studentProfileInfo.email }}
+  </p>
+  <p>
+    <i nz-icon nzType="phone" nzTheme="outline"></i> 电话 &nbsp;
+    {{ studentProfileInfo.phone == null ? '未填写' : studentProfileInfo.phone }}
+  </p>
+  <p>
+    <i nz-icon nzType="qq" nzTheme="outline"></i> QQ &nbsp;{{
+      studentProfileInfo.qq == null ? '未填写' : studentProfileInfo.qq
+    }}
+  </p>
+</nz-modal>
