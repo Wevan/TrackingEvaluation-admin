@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from './../user.service';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { Result } from 'src/app/entity/Result';
-import { StudentParam, TeacherParam } from 'src/app/entity/Params';
-import { TeacherInfo, TeacherProfileInfo } from 'src/app/entity/Info';
-import { locale } from 'core-js';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { TeacherParam } from '../entity/Params';
+import { TeacherInfo, TeacherProfileInfo } from '../entity/Info';
+import { ClassManagerService } from './class-manager.service';
+import { Result } from '../entity/Result';
 
 @Component({
-  selector: 'app-teacher',
-  templateUrl: './teacher.component.html',
-  styleUrls: ['./teacher.component.scss'],
+  selector: 'app-class-manager',
+  templateUrl: './class-manager.component.html',
+  styleUrls: ['./class-manager.component.scss'],
 })
-export class TeacherComponent implements OnInit {
+export class ClassManagerComponent implements OnInit {
   validateForm: FormGroup;
   dataSet = [];
   pageSize = 10;
@@ -21,32 +20,20 @@ export class TeacherComponent implements OnInit {
   sexOptions: number;
   listOfOption: Array<{ label: string; value: string }> = [];
   listOfTagOptions = [];
-
-  constructor(private fb: FormBuilder, private userService: UserService) {}
+  searchValue: string;
+  constructor(
+    private fb: FormBuilder,
+    private classService: ClassManagerService,
+  ) {}
 
   ngOnInit(): void {
     this.validateForm = this.fb.group({
-      positionId: [null, [Validators.required]],
-      teacherName: [null, [Validators.required]],
-      teacherNumber: [null, [Validators.required]],
-      teacherSex: [null, [Validators.required]],
-    });
-    const children: Array<{ label: string; value: string }> = [];
-    // 获取班级的请求
-    this.userService.getPosition().subscribe((result: Result) => {
-      for (let i = 0; i < result.data.length; i++) {
-        children.push({
-          label: result.data[i].name,
-          value: result.data[i].id,
-        });
-      }
-      this.listOfOption = children;
+      name: [null, [Validators.required]],
     });
 
-    // 获取所有学生
-    this.userService.getAll('teachers').subscribe(
+    // 获取所有班级
+    this.classService.getAllClass().subscribe(
       (result: Result) => {
-        console.log('result teacher ', result.data);
         this.dataSet = result.data;
       },
       () => {
@@ -65,23 +52,20 @@ export class TeacherComponent implements OnInit {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
-    const teacherName = this.validateForm.get('teacherName').value;
-    const teacherNumber = this.validateForm.get('teacherNumber').value;
-    const positionId = this.validateForm.get('positionId').value;
-    const teacherParam = new TeacherParam();
-    teacherParam.positionId = positionId;
-    teacherParam.teacherName = teacherName;
-    teacherParam.teacherNum = teacherNumber;
-    teacherParam.sex = this.sexOptions;
-    console.log('sex => ', this.sexOptions);
-    // 提交教师信息
-    this.userService.addTeacher(teacherParam).subscribe(() => {
-      this.isVisible = false;
-      this.isOkLoading = false;
-    });
+
+    const name = this.validateForm.get('name').value;
+    this.classService.addClass(name).subscribe(
+      error => {},
+      () => {
+        console.log('成功');
+        this.isOkLoading = false;
+        this.isVisible = false;
+      },
+    );
   }
 
   handleCancel(): void {
+    this.isOkLoading = false;
     this.isVisible = false;
   }
 
@@ -92,12 +76,6 @@ export class TeacherComponent implements OnInit {
     console.log('teacher id ', teacherInfo);
     this.showModalTitle = teacherInfo.name;
     this.isShowVisible = true;
-    this.userService
-      .getTeacherProfile(teacherInfo.id)
-      .subscribe((result: Result) => {
-        this.teacherProfileInfo = result.data;
-        console.log('result teacher profile ', this.teacherProfileInfo);
-      });
   }
   handleShowCancel() {
     this.isShowVisible = false;
@@ -134,25 +112,13 @@ export class TeacherComponent implements OnInit {
     teacherParam.sex = this.sexOptions; // this.validateForm.get('teacherNumber').value
     teacherParam.positionId = this.listOfTagOptions[0];
 
-    this.userService
-      .updateTeacherInfo(this.updateTeacherId, teacherParam)
-      .subscribe(
-        (result: Result) => {
-          console.log('result => ', result);
-        },
-        error => {
-          console.log('error ', error);
-        },
-        () => {
-          this.isUpdateVisible = false;
-          this.isUpdateOkLoading = false;
-          location.reload();
-        },
-      );
     this.updateTeacherId = -1;
   }
   isUpdateOkLoading = false;
   handleUpdateCancel() {
     this.isUpdateVisible = false;
   }
+
+  // 搜索功能🔍
+  search() {}
 }

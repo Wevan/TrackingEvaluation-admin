@@ -40,6 +40,11 @@ export class UserService {
     return this.http.get<Result>(`/user/profile/teacher/${teacherId}`);
   }
 
+  /**
+   * 更新教师信息
+   * @param teacherId 教师id
+   * @param teacherParam 教师更新参数
+   */
   updateTeacherInfo(
     teacherId: number,
     teacherParam: TeacherParam,
@@ -62,6 +67,7 @@ export class UserService {
   }
 
   updateTeacherRole(teacherRoleParam: TeacherRoleParam): Observable<Result> {
-    return this.http.put<Result>(``, teacherRoleParam);
+    console.log('teacher ', teacherRoleParam);
+    return this.http.put<Result>(`/role`, teacherRoleParam);
   }
 }

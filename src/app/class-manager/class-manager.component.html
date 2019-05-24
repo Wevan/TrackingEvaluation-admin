@@ -1,0 +1,206 @@
+<div class="btn-group">
+  <button nz-button nzType="primary" (click)="add()">添加</button>
+  <div>
+    <nz-input-group
+      nzSearch
+      [nzAddOnAfter]="suffixIconButton"
+      nzSize="default"
+      style="width: 240px"
+    >
+      <input
+        type="text"
+        [(ngModel)]="searchValue"
+        nz-input
+        placeholder="输入要查询的数据"
+      />
+    </nz-input-group>
+    <ng-template #suffixIconButton>
+      <button nz-button nzType="primary" nzSearch (click)="search()">
+        <i nz-icon type="search"></i>
+      </button>
+    </ng-template>
+  </div>
+</div>
+
+<nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
+
+<!-- 教师信息表格 -->
+<nz-table
+  #basicTable
+  [nzData]="dataSet"
+  [nzFrontPagination]="true"
+  [(nzPageSize)]="pageSize"
+  [(nzPageIndex)]="pageIndex"
+  nzShowPagination
+  nzShowSizeChanger
+>
+  <thead>
+    <tr>
+      <th>序号</th>
+      <th nzCustomFilter>
+        班级
+      </th>
+      <th>总人数</th>
+      <!-- <th>工号</th>
+      <th>职位</th> -->
+      <th>操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of basicTable.data; let i = index">
+      <td>{{ i + 1 }}</td>
+      <td>{{ data.name }}</td>
+      <td>{{ data.classmateCount }}</td>
+      <!-- <td>{{ data.teacherNumber }}</td>
+      <td>{{ data.position }}</td> -->
+      <td>
+        <a (click)="openProfile(data)">
+          详细信息
+        </a>
+        |
+        <a (click)="openUpdate(data)">
+          更新
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>
+
+<!-- 单个学生添加 模态框 -->
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="添加班级信息"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading"
+>
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="name"
+        >班级名称</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input formControlName="name" id="name" />
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('name')?.dirty && validateForm.get('name')?.errors
+          "
+        >
+          班级名称必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="isShowVisible"
+  nzTitle="{{ showModalTitle }}"
+  (nzOnCancel)="handleShowCancel()"
+  (nzOnOk)="handleShowOk()"
+>
+  <p>
+    <i nz-icon nzType="user" nzTheme="outline"></i> 姓名&nbsp;
+    {{ teacherProfileInfo.name }}
+  </p>
+  <p>
+    <i nz-icon nzType="tag" nzTheme="outline"></i> 工号&nbsp;
+    {{ teacherProfileInfo.jobNumber }}
+  </p>
+  <p>
+    <i nz-icon nzType="idcard" nzTheme="outline"></i> 职位&nbsp;
+    {{ teacherProfileInfo.position }}
+  </p>
+  <p>
+    <i nz-icon nzType="woman" nzTheme="outline"></i> 性别&nbsp;
+    {{ teacherProfileInfo.sex }}
+  </p>
+  <p>
+    <i nz-icon nzType="phone" nzTheme="outline"></i>电话&nbsp;
+    {{ teacherProfileInfo.tel == null ? '未填写' : teacherProfileInfo.tel }}
+  </p>
+</nz-modal>
+
+<!-- 更新 教师信息 -->
+<!-- <nz-modal
+  [(nzVisible)]="isUpdateVisible"
+  nzTitle="信息更新"
+  (nzOnCancel)="handleUpdateCancel()"
+  (nzOnOk)="handleUpdateOk()"
+  [nzOkLoading]="isUpdateOkLoading"
+>
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="teacherNumber"
+        >工号</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input formControlName="teacherNumber" id="teacherNumber" />
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('teacherNumber')?.dirty &&
+            validateForm.get('teacherNumber')?.errors
+          "
+        >
+          工号必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="teacherName" nzRequired
+        >姓名</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="teacherName" formControlName="teacherName" />
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('teacherName')?.dirty &&
+            validateForm.get('teacherName')?.errors
+          "
+          >请输入姓名!</nz-form-explain
+        >
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="teacherSex" nzRequired>
+        <span>
+          性别
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 100%;"
+          nzPlaceHolder="性别"
+          [(ngModel)]="sexOptions"
+          formControlName="teacherSex"
+        >
+          <nz-option nzLabel="男" nzValue="1"> </nz-option>
+          <nz-option nzLabel="女" nzValue="0"> </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="nickname" nzRequired>
+        <span>
+          职位
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 100%;"
+          nzShowSearch="true"
+          nzPlaceHolder="选择职位"
+          [(ngModel)]="listOfTagOptions"
+          formControlName="positionId"
+        >
+          <nz-option
+            *ngFor="let option of listOfOption"
+            [nzLabel]="option.label"
+            [nzValue]="option.value"
+          >
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal> -->
