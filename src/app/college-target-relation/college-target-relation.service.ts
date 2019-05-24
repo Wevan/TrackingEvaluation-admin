@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {CollegeTarget} from '../entity/CollegeTarget';
 import {Observable} from 'rxjs';
@@ -16,16 +16,20 @@ export class CollegeTargetRelationService {
     return this.http.post<Result>('/collegeAndability/insertAll', collegeTargetList);
   }
 
-  getTargetList(): Observable<Result> {
-    return this.http.get<Result>('/collegeTarget/all');
+  getAbilityTargetList(): Observable<Result> {
+    return this.http.get<Result>('/collegeAndability/getAll');
+  }
+
+  getTargetList(collegeId: number): Observable<Result> {
+    return this.http.get<Result>('/collegeTarget/getByCollegeId?collegeId=' + collegeId);
   }
 
   getCollegeList(): Observable<Result> {
     return this.http.get<Result>('/college/all');
   }
 
-  getRAbilityList(): Observable<Result> {
-    return this.http.get<Result>('/rability/all');
+  getRAbilityList(collegeId: number): Observable<Result> {
+    return this.http.get<Result>('/rability/findByCollegeId?collegeId=' + collegeId);
   }
 
 }

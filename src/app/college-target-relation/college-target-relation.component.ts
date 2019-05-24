@@ -3,6 +3,8 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CollegeTargetRelationService} from './college-target-relation.service';
 import {CollegeResponse} from '../entity/CollegeResponse';
 import {CollegeTarget} from '../entity/CollegeTarget';
+import {CollegeAndAbility} from '../entity/CollegeAndAbility';
+import {CollegeAndAbilityEntity} from '../entity/CollegeAndAbilityEntity';
 
 @Component({
   selector: 'app-college-target-relation',
@@ -19,7 +21,8 @@ export class CollegeTargetRelationComponent implements OnInit {
   isOkLoading = false;
   listOfCollege = [];
   // 专业目标按照专业的分组列表
-  listOfTarget: Array<CollegeResponse> = [];
+  listOfTarget: Array<CollegeTarget> = [];
+  listOfCA: Array<CollegeAndAbility> = [];
   value: 'string';
 
   selectedCollege = null;
@@ -31,19 +34,35 @@ export class CollegeTargetRelationComponent implements OnInit {
     this.validateForm = this.fb.group({
       majorName: [null, [Validators.required]],
       graduateName: [null, [Validators.required]],
-      collegeTarget: [null, [Validators.required]],
+      relation: [null, [Validators.required]],
     });
-    // this.getList();
+    this.initCAdata();
   }
 
   /**
-   * 添加专业目标
+   * 初始化展示数据
+   */
+  initCAdata() {
+    this.collegeTargetRelationService.getAbilityTargetList().subscribe(
+      next => {
+        if (next.code === 200) {
+          this.listOfCA = next.data;
+          console.log('listOfCA', next);
+        }
+      },
+      (err: Error) => {
+        console.log(err);
+      }
+    );
+  }
+
+  /**
+   * 添加关系
    */
 
   addCollegeAndAbility(): void {
     this.isVisible = true;
-    // this.getCollegeList();
-    // this.getRAbilityList();
+    this.getCollegeList();
   }
 
   getCollegeList() {
@@ -62,26 +81,28 @@ export class CollegeTargetRelationComponent implements OnInit {
 
   handleOk(): void {
     const majorName = this.validateForm.get('majorName').value;
-    // const graduateName = this.validateForm.get('graduateName').value;
-    const collegeTarget = this.validateForm.get('collegeTarget').value;
-    const regex = /\[(.+?)\]/g;
-    const options = collegeTarget.match(regex);
+    const graduateName = this.validateForm.get('graduateName').value;
+    const relation = this.validateForm.get('relation').value;
+    console.log('The msg is ', majorName, ',', graduateName, ',', relation);
     const list = [];
+    let counter = -1;
+    const options = relation.split('/');
     options.forEach(
       item => {
-        const afterDeal = item.replace(/\[|]/g, '');
-        const tempArray = afterDeal.split('/');
-        const collegeTargetEntity = new CollegeTarget();
-        collegeTargetEntity.name = tempArray[0];
-        collegeTargetEntity.percent = tempArray[1];
-        collegeTargetEntity.collegeId = majorName;
-        list.push(collegeTargetEntity);
+        counter++;
+        const collegeAbilityRelation = new CollegeAndAbilityEntity();
+        collegeAbilityRelation.abilityId = graduateName;
+        collegeAbilityRelation.collegeId = majorName;
+        collegeAbilityRelation.collegeTargetId = this.listOfTarget[counter].id;
+        collegeAbilityRelation.percent = item;
+        list.push(collegeAbilityRelation);
       }
     );
+    console.log('relation list', list);
     this.collegeTargetRelationService.addCollegeAndAbility(list).subscribe(
       next => {
         if (next.code === 200) {
-          console.log('Target', next);
+          console.log('collegeTargetRelationService', next);
         }
       },
       (err: Error) => {
@@ -90,17 +111,24 @@ export class CollegeTargetRelationComponent implements OnInit {
       () => {
         this.isOkLoading = false;
         this.isVisible = false;
-
       }
     );
     this.validateForm.reset();
     this.isVisible = false;
     this.listOfTarget = [];
-    this.getList();
+    this.listOfCA = [];
+    this.listOfCollege = [];
+    this.listOfRAbility = [];
+    this.initCAdata();
+  }
+
+// 选择框中专业选择后的改变
+  collegeChange() {
+    this.getRAbilityList();
   }
 
   getRAbilityList() {
-    this.collegeTargetRelationService.getRAbilityList().subscribe(
+    this.collegeTargetRelationService.getRAbilityList(this.selectedCollege).subscribe(
       next => {
         if (next.code === 200) {
           this.listOfRAbility = next.data;
@@ -109,6 +137,8 @@ export class CollegeTargetRelationComponent implements OnInit {
       },
       (err: Error) => {
         console.log(err);
+      }, () => {
+        this.getCollegeTargetList();
       }
     );
   }
@@ -119,10 +149,10 @@ export class CollegeTargetRelationComponent implements OnInit {
   }
 
   /**
-   * 获取专业列表
+   * 获取专业目标列表
    */
-  getList() {
-    this.collegeTargetRelationService.getTargetList().subscribe(
+  getCollegeTargetList() {
+    this.collegeTargetRelationService.getTargetList(this.selectedCollege).subscribe(
       next => {
         this.listOfTarget = next.data;
         console.log('TargetList', next);

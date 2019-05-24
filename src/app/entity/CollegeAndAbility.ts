@@ -1,7 +1,7 @@
+import {CAResponse} from './CAResponse';
+
 export class CollegeAndAbility {
-  id: number;
-  abilityId: number;
-  collegeTargetId: number;
-  collegeId: number;
-  percent: number;
+  collegeId: number ;
+  collegeName: string ;
+  collegeAbilityList: Array<CAResponse>;
 }
