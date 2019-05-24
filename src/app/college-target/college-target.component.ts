@@ -23,7 +23,6 @@ export class CollegeTargetComponent implements OnInit {
   value: 'string';
 
   selectedCollege = null;
-  selectedRAbility = null;
 
   listOfRAbility = [];
 

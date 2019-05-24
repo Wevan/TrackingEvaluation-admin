@@ -61,33 +61,6 @@
         </nz-form-explain>
       </nz-form-control>
     </nz-form-item>
-<!--    <nz-form-item>-->
-<!--      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="graduateName">-->
-<!--        毕业指标名称-->
-<!--      </nz-form-label>-->
-<!--      <nz-form-control [nzSm]="14" [nzXs]="24">-->
-<!--        <nz-select-->
-<!--          style="width: 200px;"-->
-<!--          nzShowSearch-->
-<!--          nzAllowClear-->
-<!--          nzPlaceHolder="选择毕业指标"-->
-<!--          [(ngModel)]="selectedRAbility"-->
-<!--          formControlName="graduateName"-->
-<!--          id="graduateName"-->
-<!--        >-->
-<!--          <span *ngFor="let item of listOfRAbility;let i=index">-->
-<!--          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>-->
-<!--          </span>-->
-<!--        </nz-select>-->
-<!--        <nz-form-explain-->
-<!--          *ngIf="-->
-<!--            validateForm.get('graduateName')?.dirty &&-->
-<!--            validateForm.get('graduateName')?.errors-->
-<!--          ">-->
-<!--          毕业指标必须填写-->
-<!--        </nz-form-explain>-->
-<!--      </nz-form-control>-->
-<!--    </nz-form-item>-->
     <nz-form-item>
       <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="collegeTarget" nzRequired>
         <span>

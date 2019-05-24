@@ -1,0 +1,151 @@
+<button nz-button nzType="default" (click)="addDirection()">添加</button>
+
+<nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
+
+<!-- 信息展示表格 -->
+
+<nz-collapse nzAccordion>
+  <nz-collapse-panel *ngFor="let item of listOfData" [nzHeader]="item.collegeName">
+    <nz-table #basicTable [nzData]="item.directionList">
+      <thead>
+      <tr>
+        <th>序号</th>
+        <th>方向名称</th>
+        <th>方向简介</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let sonitem of basicTable.data;let i=index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ sonitem.name }}</td>
+        <td>{{ sonitem.summary }}</td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </nz-collapse-panel>
+</nz-collapse>
+
+<!-- 单个方向添加 模态框 -->
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="添加方向"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading">
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="majorName">
+        专业名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 200px;"
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="选择专业"
+          [(ngModel)]="selectedCollege"
+          formControlName="majorName"
+          id="majorName"
+        >
+          <span *ngFor="let item of listOfCollege;let i=index">
+          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>
+          </span>
+        </nz-select>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('majorName')?.dirty &&
+            validateForm.get('majorName')?.errors
+          ">
+          专业必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="directionName" nzRequired
+      >方向
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="directionName" formControlName="directionName"/>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('directionName')?.dirty &&
+            validateForm.get('directionName')?.errors
+          ">
+          方向必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="directionDescription" nzRequired>
+        <span>
+          方向介绍
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <textarea id="directionDescription" formControlName="directionDescription"
+                  nz-input
+                  placeholder="方向介绍"
+                  [(ngModel)]="value"
+                  [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+        ></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<!-- 修改方向 模态框 -->
+<nz-modal
+  [(nzVisible)]="misVisible"
+  nzTitle="修改方向"
+  (nzOnCancel)="mhandleCancel()"
+  (nzOnOk)="mhandleOk()"
+  [nzOkLoading]="misOkLoading">
+  <form nz-form [formGroup]="mvalidateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="mmajorName">
+        专业名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input formControlName="mmajorName" id="mmajorName" value="{{mmajor}}"/>
+        <nz-form-explain
+          *ngIf="
+            mvalidateForm.get('mmajorName')?.dirty &&
+            mvalidateForm.get('mmajorName')?.errors
+          ">
+          专业必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="mdirectionName" nzRequired
+      >学院
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="mdirectionName" formControlName="mdirectionName" value="{{mname}}"/>
+        <nz-form-explain
+          *ngIf="
+            mvalidateForm.get('mdirectionName')?.dirty &&
+            mvalidateForm.get('mdirectionName')?.errors
+          ">
+          学院必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="mdirectionDescription" nzRequired>
+        <span>
+          专业介绍
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <textarea id="mdirectionDescription" formControlName="mdirectionDescription"
+                  nz-input
+                  placeholder="专业介绍"
+                  [(ngModel)]="mvalue"
+                  [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                  value="{{msummary}}"
+        ></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
