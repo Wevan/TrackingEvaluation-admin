@@ -24,5 +24,5 @@ export class TeacherRoleParam {
   /**
    * 权限id
    */
-  roleId: Array<number>[];
+  roleIds: Array<number>[];
 }

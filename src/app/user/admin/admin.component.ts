@@ -45,12 +45,12 @@ export class AdminComponent implements OnInit {
   openUpdate(data): void {
     this.isVisible = true;
     this.validateForm.get('teacherName').setValue(data.name);
+
     this.updateTeacherId = data.id;
     this.validateForm.get('teacherNumber').setValue(data.jobNumber);
     const children: Array<{ label: string; value: string }> = [];
 
     this.userService.getAllRole().subscribe((result: Result) => {
-      console.log('roles is ', result);
       for (let i = 0; i < result.data.length; i++) {
         children.push({
           label: result.data[i].about,
@@ -68,7 +68,7 @@ export class AdminComponent implements OnInit {
       this.validateForm.controls[i].updateValueAndValidity();
     }
     var teacherRoleParam = new TeacherRoleParam();
-    teacherRoleParam.roleId = this.listOfTagOptions;
+    teacherRoleParam.roleIds = this.listOfTagOptions;
     teacherRoleParam.teacherId = this.updateTeacherId;
     this.updateTeacherId = -1;
     // 更新教师权限信息

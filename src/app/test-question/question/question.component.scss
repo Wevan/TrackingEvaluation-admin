@@ -1,0 +1,25 @@
+.table-title {
+    max-width: 450px;
+}
+
+.table-answer {
+    max-width: 400px;
+}
+.table-type {
+    max-width: 150px;
+}
+.button-group {
+    display: flex;
+    justify-content: flex-start;
+    justify-self: flex-start;
+
+    .btn-add {
+      flex:1;
+    }
+    .btn-upload {
+      flex: 1;
+    }
+    .btn-download {
+      flex:1;
+    }
+  }
