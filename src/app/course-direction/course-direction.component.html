@@ -1,0 +1,100 @@
+<button nz-button nzType="default" (click)="addCourseDirection()">添加</button>
+
+<nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
+
+<!-- 信息展示表格 -->
+<nz-table #basicTable [nzData]="listOfData">
+  <thead>
+  <tr>
+    <th>序号</th>
+    <th>学院</th>
+    <th>公共课百分比</th>
+    <th>专业课百分比</th>
+    <th>操作</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let item of basicTable.data;let i=index">
+    <td>{{ i + 1 }}</td>
+    <td>{{ item.collegeName }}</td>
+    <td>{{ item.courseDirect.commen * 100 }}%</td>
+    <td>{{ item.courseDirect.direction * 100 }}%</td>
+    <td>
+<!--      <a (click)="beforeModify(item.id,item.major,item.name,item.summary)">修改</a>-->
+<!--      <nz-divider nzType="vertical"></nz-divider>-->
+      <a (click)="deleteOne(item.id)">删除</a>
+    </td>
+  </tr>
+  </tbody>
+</nz-table>
+
+<!-- 单个专业添加 模态框 -->
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="专业课程关系占比"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading">
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="majorName">
+        专业名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 200px;"
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="选择专业"
+          [(ngModel)]="selectedCollege"
+          formControlName="majorName"
+          id="majorName"
+        >
+          <span *ngFor="let item of listOfCollege;let i=index">
+          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>
+          </span>
+        </nz-select>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('majorName')?.dirty &&
+            validateForm.get('majorName')?.errors
+          ">
+          专业必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="direction" nzRequired>
+        方向课程百分比
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="direction" formControlName="direction"/>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('direction')?.dirty &&
+            validateForm.get('direction')?.errors
+          ">
+          方向课程百分比必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="commen" nzRequired>
+        <span>
+          公共课程百分比
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="commen" formControlName="commen"/>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('commen')?.dirty &&
+            validateForm.get('commen')?.errors
+          ">
+          公共课程百分比必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+

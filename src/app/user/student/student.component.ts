@@ -11,7 +11,7 @@ import { UploadFile, UploadXHRArgs } from 'ng-zorro-antd';
 import { StudentInfo, StudentProfileInfo } from 'src/app/entity/Info';
 import { StudentParam } from 'src/app/entity/Params';
 import { Result } from 'src/app/entity/Result';
-import { UserService } from './../user.service';
+import { UserService } from '../user.service';
 
 @Component({
   selector: 'app-student',
@@ -37,7 +37,7 @@ export class StudentComponent implements OnInit {
   updateFrom: FormGroup;
   listOfData: Array<StudentInfo> = [];
   studentProfileInfo = new StudentProfileInfo();
-  updateModalTitle: string = '';
+  updateModalTitle = '';
   studentFileList: UploadFile[] = [];
   ngOnInit(): void {
     this.validateForm = this.fb.group({
@@ -99,7 +99,7 @@ export class StudentComponent implements OnInit {
         item.onError(err, item.file);
       },
     );
-  };
+  }
 
   /**
    * 确定后上传数据 进行单个添加
@@ -132,7 +132,7 @@ export class StudentComponent implements OnInit {
     this.userService.downExcle().subscribe(
       res => {
         const objUrl = URL.createObjectURL(res);
-        var a = document.createElement('a');
+        const a = document.createElement('a');
         document.body.appendChild(a);
         a.setAttribute('style', 'display:none');
         a.setAttribute('href', objUrl);

@@ -16,7 +16,9 @@ const routes: Routes = [
     path: 'class',
     loadChildren: './class-manager/class-manager.module#ClassManagerModule',
   },
-
+  { path: 'courseDirection', loadChildren: './course-direction/course-direction.module#CourseDirectionModule' },
+  { path: 'course', loadChildren: './course/course.module#CourseModule' },
+  { path: 'courseTarget', loadChildren: './course-target/course-target.module#CourseTargetModule' },
 ];
 
 @NgModule({
