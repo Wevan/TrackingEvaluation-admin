@@ -17,4 +17,8 @@ export class ClassManagerService {
   addClass(className: string): Observable<Result> {
     return this.http.post<Result>(`/class/add`, className);
   }
+
+  search(name: String): Observable<Result> {
+    return this.http.get<Result>(`/class/search/${name}`);
+  }
 }

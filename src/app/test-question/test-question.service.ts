@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Result } from '../entity/Result';
+import { TitleParam } from '../entity/Params';
 
 @Injectable({
   providedIn: 'root',
@@ -20,5 +21,19 @@ export class TestQuestionService {
    */
   getAllTitles(): Observable<Result> {
     return this.http.get<Result>(`/titles`);
+  }
+
+  getAllCourse(): Observable<Result> {
+    return this.http.get<Result>('/course/findAll');
+  }
+
+  findByCourse(courseId: number): Observable<Result> {
+    return this.http.get<Result>(
+      `/knowledge/findByCourse?courseId=${courseId}`,
+    );
+  }
+
+  addTitle(titleParam: TitleParam): Observable<Result> {
+    return this.http.post<Result>('/title', titleParam);
   }
 }

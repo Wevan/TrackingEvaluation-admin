@@ -26,3 +26,18 @@ export class TeacherRoleParam {
    */
   roleIds: Array<number>[];
 }
+
+export class TitleParam {
+  title: string;
+  answer: string;
+  analysis: string;
+  difficulty: number;
+  courseId: number;
+  knowledgeId: number;
+  isOrder: number;
+  category: string;
+  sectionA: string;
+  sectionB: string;
+  sectionC: string;
+  sectionD: string;
+}
