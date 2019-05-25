@@ -80,3 +80,18 @@ export class TeacherProfileInfo {
   sex: string;
   tel: string;
 }
+/**
+ * 试题详情信息
+ */
+export class TitleProfileInfo {
+  id: number;
+  title: string;
+  analysis: string;
+  category: string;
+  difficulty: number;
+  knowledge: string;
+  sectionA: string;
+  sectionB: string;
+  sectionC: string;
+  sectionD: string;
+}

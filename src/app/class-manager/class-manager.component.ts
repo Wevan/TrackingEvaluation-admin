@@ -30,7 +30,10 @@ export class ClassManagerComponent implements OnInit {
     this.validateForm = this.fb.group({
       name: [null, [Validators.required]],
     });
+    this.loadData();
+  }
 
+  loadData() {
     // 获取所有班级
     this.classService.getAllClass().subscribe(
       (result: Result) => {
@@ -41,7 +44,6 @@ export class ClassManagerComponent implements OnInit {
       },
     );
   }
-
   add(): void {
     this.isVisible = true;
   }
@@ -120,5 +122,15 @@ export class ClassManagerComponent implements OnInit {
   }
 
   // 搜索功能🔍
-  search() {}
+  search() {
+    console.log('search => ', this.searchValue);
+    if (this.searchValue == '' || this.searchValue == undefined) {
+      this.loadData();
+    }
+
+    this.dataSet = [];
+    this.classService.search(this.searchValue).subscribe((result: Result) => {
+      this.dataSet = result.data;
+    });
+  }
 }
