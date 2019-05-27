@@ -1,16 +1,16 @@
-<button nz-button nzType="default" (click)="addCollegeTarget()">添加</button>
+<button nz-button nzType="default" (click)="addKnowledge()">添加</button>
 
 <nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
 
 <!-- 信息展示表格 -->
 
 <nz-collapse nzAccordion>
-  <nz-collapse-panel *ngFor="let item of listOfTarget" [nzHeader]="item.courseName">
-    <nz-table #basicTable [nzData]="item.courseTargetList">
+  <nz-collapse-panel *ngFor="let item of listOfKnowledges" [nzHeader]="item.courseName">
+    <nz-table #basicTable [nzData]="item.knowledgeList">
       <thead>
       <tr>
         <th>序号</th>
-        <th>专业目标名称</th>
+        <th>考核方式名称</th>
         <th>百分比</th>
       </tr>
       </thead>
@@ -29,7 +29,7 @@
 <!-- 课程目标添加 模态框 -->
 <nz-modal
   [(nzVisible)]="isVisible"
-  nzTitle="添加课程目标"
+  nzTitle="添加考核方式"
   (nzOnCancel)="handleCancel()"
   (nzOnOk)="handleOk()"
   [nzOkLoading]="isOkLoading">
@@ -90,21 +90,20 @@
       </nz-form-control>
     </nz-form-item>
     <nz-form-item>
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="courseTarget" nzRequired>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="knowledgeList" nzRequired>
         <span>
-          课程目标
+          考核方式
         </span>
       </nz-form-label>
       <nz-form-control [nzSm]="14" [nzXs]="24">
-        <textarea id="collegeTarget" formControlName="courseTarget"
+        <textarea id="knowledgeList" formControlName="knowledgeList"
                   nz-input
-                  placeholder="课程目标多个，每个请用[]包裹
-eg:[课标1/0.3][课标2/0.5][课标3/0.2]"
+                  placeholder="考核方式多个，每个请用[]包裹
+eg:[知识1/0.3][知识2/0.5][知识3/0.2]"
                   [(ngModel)]="value"
-                  [nzAutosize]="{ minRows: 2, maxRows: 6 }"
+                  [nzAutosize]="{ minRows: 3, maxRows: 6 }"
         ></textarea>
       </nz-form-control>
     </nz-form-item>
   </form>
 </nz-modal>
-
