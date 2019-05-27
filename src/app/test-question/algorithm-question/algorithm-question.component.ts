@@ -6,7 +6,13 @@ import {
   HttpResponse,
 } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+  AbstractControl,
+} from '@angular/forms';
 import { UploadFile, UploadXHRArgs, NzMessageService } from 'ng-zorro-antd';
 import {
   StudentInfo,
@@ -14,21 +20,21 @@ import {
   TitleProfileInfo,
 } from 'src/app/entity/Info';
 import { StudentParam, TitleParam } from 'src/app/entity/Params';
-import { TestQuestionService } from '../test-question.service';
 import { Result } from 'src/app/entity/Result';
+import { TestQuestionService } from '../test-question.service';
 
 @Component({
-  selector: 'app-question',
-  templateUrl: './question.component.html',
-  styleUrls: ['./question.component.scss'],
+  selector: 'app-algorithm-question',
+  templateUrl: './algorithm-question.component.html',
+  styleUrls: ['./algorithm-question.component.scss'],
 })
-export class QuestionComponent implements OnInit {
+export class AlgorithmQuestionComponent implements OnInit {
   size = 'default';
   constructor(
     private fb: FormBuilder,
-    private testQuestionService: TestQuestionService,
     private http: HttpClient,
     private message: NzMessageService,
+    private questionService: TestQuestionService,
   ) {}
   validateForm: FormGroup;
   dataSet = [];
@@ -51,10 +57,21 @@ export class QuestionComponent implements OnInit {
   listOfTypeOption: Array<{ label: string; value: string }> = [];
   listOfCourseOption: Array<{ label: string; value: string }> = [];
   listOfKnowledgeIdOption: Array<{ label: string; value: string }> = [];
-
   isOrderValue: string;
   selectAnswer: string;
+
+  // 动态表单
+  dataSetFrom: FormGroup;
+  controlArray: Array<{ id: number; controlInstance: string }> = [];
+
   ngOnInit(): void {
+    this.dataSetFrom = this.fb.group({});
+    // 获取所有试题
+    this.questionService.getTitleByCategory('5').subscribe((result: Result) => {
+      console.log('title  ', result.data);
+      this.listOfData = result.data;
+    });
+
     this.validateForm = this.fb.group({
       title: [null, [Validators.required]],
       answer: [null, [Validators.required]],
@@ -85,13 +102,34 @@ export class QuestionComponent implements OnInit {
       sectionC: [null],
       sectionD: [null],
     });
+    this.addField();
 
-    // 获取所有试题
-    this.testQuestionService.getAllTitles().subscribe((result: Result) => {
-      console.log('students ', result.data);
-      this.listOfData = result.data;
-    });
-    this.getCourse();
+    // this.getCourse();
+  }
+
+  // 添加空白的输入框
+  addField(e?: MouseEvent): void {
+    if (e) {
+      e.preventDefault();
+    }
+    const id =
+      this.controlArray.length > 0
+        ? this.controlArray[this.controlArray.length - 1].id + 1
+        : 0;
+
+    const control = {
+      id,
+      controlInstance: `dataset${id}`, // 数据集
+    };
+    const index = this.controlArray.push(control);
+    this.validateForm.addControl(
+      this.controlArray[index - 1].controlInstance,
+      new FormControl(null, Validators.required),
+    );
+  }
+
+  getFormControl(name: string): AbstractControl {
+    return this.validateForm.controls[name];
   }
 
   addTitle(): void {
@@ -100,7 +138,7 @@ export class QuestionComponent implements OnInit {
   }
   private getCourse() {
     const courseChildren: Array<{ label: string; value: string }> = [];
-    this.testQuestionService.getAllCourse().subscribe((result: Result) => {
+    this.questionService.getAllCourse().subscribe((result: Result) => {
       console.log('data => ', result.data);
       for (let i = 0; i < result.data.length; i++) {
         courseChildren.push({
@@ -123,15 +161,15 @@ export class QuestionComponent implements OnInit {
       return;
     }
     const knowledgeIdChildren: Array<{ label: string; value: string }> = [];
-    this.testQuestionService.findByCourse(event).subscribe((result: Result) => {
-      for (let i = 0; i < result.data.length; i++) {
-        knowledgeIdChildren.push({
-          label: result.data[i].name,
-          value: result.data[i].id,
-        });
-        this.listOfKnowledgeIdOption = knowledgeIdChildren;
-      }
-    });
+    // this.testQuestionService.findByCourse(event).subscribe((result: Result) => {
+    //   for (let i = 0; i < result.data.length; i++) {
+    //     knowledgeIdChildren.push({
+    //       label: result.data[i].name,
+    //       value: result.data[i].id,
+    //     });
+    //     this.listOfKnowledgeIdOption = knowledgeIdChildren;
+    //   }
+    // });
   }
   /**
    * 定制的上传方法
@@ -162,70 +200,94 @@ export class QuestionComponent implements OnInit {
   };
 
   /**
+   * 移除自由添加的数据框
+   */
+  removeField(i: { id: number; controlInstance: string }, e: MouseEvent): void {
+    e.preventDefault();
+    if (this.controlArray.length > 1) {
+      const index = this.controlArray.indexOf(i);
+      this.controlArray.splice(index, 1);
+      console.log(this.controlArray);
+      this.validateForm.removeControl(i.controlInstance);
+    }
+  }
+
+  /**
    * 确定后上传数据 进行单个添加
    */
   handleOk(): void {
+    console.log('value ', this.validateForm.value);
     for (const i of Object.keys(this.validateForm.controls)) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
     const titleParam = new TitleParam();
-
+    titleParam.category = '5';
     titleParam.title = this.validateForm.get('title').value;
     titleParam.answer = this.validateForm.get('answer').value;
     titleParam.analysis = this.validateForm.get('analysis').value;
     titleParam.difficulty = this.validateForm.get('difficulty').value;
     titleParam.courseId = this.validateForm.get('courseId').value;
     titleParam.knowledgeId = this.validateForm.get('knowledgeId').value;
-    titleParam.isOrder = this.validateForm.get('isOrder').value;
     titleParam.category = this.validateForm.get('category').value;
-    titleParam.sectionA = this.validateForm.get('sectionA').value;
-    titleParam.sectionB = this.validateForm.get('sectionB').value;
-    titleParam.sectionC = this.validateForm.get('sectionC').value;
-    titleParam.sectionD = this.validateForm.get('sectionD').value;
+    console.log('this controller ', this.controlArray);
+    // 处理数组数据
+    const dataSetArray: Array<{ input: string; output: string }> = [];
 
-    if (titleParam.category == '1') {
-      if (titleParam.sectionA == null) {
-        this.message.create('error', `请设置A选项`);
-        return;
-      } else {
-        titleParam.sectionA = '【' + titleParam.sectionA + '】';
-      }
-      if (titleParam.sectionB == null) {
-        this.message.create('error', `请设置B选项`);
-        return;
-      } else {
-        titleParam.sectionB = '【' + titleParam.sectionB + '】';
-      }
-      if (titleParam.sectionC == null) {
-        this.message.create('error', `请设置C选项`);
-        return;
-      } else {
-        titleParam.sectionC = '【' + titleParam.sectionC + '】';
-      }
-      if (titleParam.sectionD == null) {
-        this.message.create('error', `请设置D选项`);
+    this.controlArray.forEach((i: { id: number; controlInstance: string }) => {
+      var value: string = this.validateForm.get(i.controlInstance).value;
+      var data = value.split('/');
+      var inputData = data[0];
+      // 对数据不规范进行替换
+      const standedInputData = inputData.replace('，', ',');
+      var outputData = data[1];
+      const standedOutputData = outputData.replace('，', ',');
 
-        return;
-      } else {
-        titleParam.sectionD = '【' + titleParam.sectionD + '】';
-      }
-    }
-    if (titleParam.category == '2') {
-      if (titleParam.isOrder == null) {
-        // 默认为无序答案
-        titleParam.isOrder = 0;
-      }
-    }
+      console.log('input data ', standedInputData);
+    });
+
+    // if (titleParam.category == '1') {
+    //   if (titleParam.sectionA == null) {
+    //     this.message.create('error', `请设置A选项`);
+    //     return;
+    //   } else {
+    //     titleParam.sectionA = '【' + titleParam.sectionA + '】';
+    //   }
+    //   if (titleParam.sectionB == null) {
+    //     this.message.create('error', `请设置B选项`);
+    //     return;
+    //   } else {
+    //     titleParam.sectionB = '【' + titleParam.sectionB + '】';
+    //   }
+    //   if (titleParam.sectionC == null) {
+    //     this.message.create('error', `请设置C选项`);
+    //     return;
+    //   } else {
+    //     titleParam.sectionC = '【' + titleParam.sectionC + '】';
+    //   }
+    //   if (titleParam.sectionD == null) {
+    //     this.message.create('error', `请设置D选项`);
+
+    //     return;
+    //   } else {
+    //     titleParam.sectionD = '【' + titleParam.sectionD + '】';
+    //   }
+    // }
+    // if (titleParam.category == '2') {
+    //   if (titleParam.isOrder == null) {
+    //     // 默认为无序答案
+    //     titleParam.isOrder = 0;
+    //   }
+    // }
     this.isOkLoading = true;
-    this.testQuestionService
-      .addTitle(titleParam)
-      .subscribe((result: Result) => {
-        this.isOkLoading = false;
-        this.isVisible = false;
-      });
+    // this.testQuestionService
+    //   .addTitle(titleParam)
+    //   .subscribe((result: Result) => {
+    //     this.isOkLoading = false;
+    //     this.isVisible = false;
+    //   });
     this.validateForm.reset();
-    console.log('title param => ', titleParam);
+    // console.log('title param => ', titleParam);
     // 进行上传试题
   }
 
@@ -235,21 +297,21 @@ export class QuestionComponent implements OnInit {
   }
 
   download(courseId: number) {
-    this.testQuestionService.downTitleTemplates(courseId).subscribe(
-      res => {
-        const objUrl = URL.createObjectURL(res);
-        var a = document.createElement('a');
-        document.body.appendChild(a);
-        a.setAttribute('style', 'display:none');
-        a.setAttribute('href', objUrl);
-        a.setAttribute('download', '试题模板.xlsx');
-        a.click();
-        URL.revokeObjectURL(objUrl);
-      },
-      error => {
-        console.log('error is ', error);
-      },
-    );
+    // this.testQuestionService.downTitleTemplates(courseId).subscribe(
+    //   res => {
+    //     const objUrl = URL.createObjectURL(res);
+    //     var a = document.createElement('a');
+    //     document.body.appendChild(a);
+    //     a.setAttribute('style', 'display:none');
+    //     a.setAttribute('href', objUrl);
+    //     a.setAttribute('download', '试题模板.xlsx');
+    //     a.click();
+    //     URL.revokeObjectURL(objUrl);
+    //   },
+    //   error => {
+    //     console.log('error is ', error);
+    //   },
+    // );
   }
 
   titleProfileInfo: TitleProfileInfo = new TitleProfileInfo();
@@ -321,11 +383,11 @@ export class QuestionComponent implements OnInit {
       }
     }
     this.isUpdateLoading = true;
-    this.testQuestionService
-      .updateTitle(titleParam)
-      .subscribe((result: Result) => {
-        console.log(result);
-      });
+    // this.testQuestionService
+    //   .updateTitle(titleParam)
+    //   .subscribe((result: Result) => {
+    //     console.log(result);
+    //   });
     this.isUpdateLoading = false;
     this.isUpdateVisible = false;
   }

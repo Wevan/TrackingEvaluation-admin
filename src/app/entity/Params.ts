@@ -28,6 +28,7 @@ export class TeacherRoleParam {
 }
 
 export class TitleParam {
+  id: number;
   title: string;
   answer: string;
   analysis: string;

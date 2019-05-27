@@ -27,7 +27,9 @@
         </span>
         <ul>
           <li nz-menu-item (click)="toRouter('question')">导入试题</li>
-          <li nz-menu-item>算法题管理</li>
+          <li nz-menu-item (click)="toRouter('question/algotithm')">
+            算法题管理
+          </li>
         </ul>
       </li>
       <li nz-submenu>
@@ -38,9 +40,10 @@
           <li nz-menu-item (click)="toRouter('college')">专业信息</li>
           <li nz-menu-item (click)="toRouter('collegeTarget')">专业目标管理</li>
 
-          <li nz-menu-item (click)="toRouter('collegeTargetRelation')">专业目标关系</li>
+          <li nz-menu-item (click)="toRouter('collegeTargetRelation')">
+            专业目标关系
+          </li>
           <li nz-menu-item (click)="toRouter('direction')">添加方向</li>
-
         </ul>
       </li>
       <li nz-submenu>
@@ -57,7 +60,9 @@
           <i nz-icon type="tags"></i><span class="nav-text">课程管理</span>
         </span>
         <ul>
-          <li nz-menu-item (click)="toRouter('courseDirection')">课程大纲百分比</li>
+          <li nz-menu-item (click)="toRouter('courseDirection')">
+            课程大纲百分比
+          </li>
           <li nz-menu-item (click)="toRouter('course')">课程管理</li>
           <li nz-menu-item (click)="toRouter('courseTarget')">课程目标</li>
           <li nz-menu-item (click)="toRouter('knowledge')">知识点管理</li>
@@ -87,7 +92,7 @@
       </div>
     </nz-content>
     <nz-footer style="text-align: center;"
-    >Ant Design ©2019 Implement By Angular
+      >Ant Design ©2019 Implement By Angular
     </nz-footer>
   </nz-layout>
 </nz-layout>

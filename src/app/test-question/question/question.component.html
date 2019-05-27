@@ -2,16 +2,19 @@
   <button nz-button nzType="default" (click)="addTitle()" class="btn-add">
     添加
   </button>
-
-  <button
-    class="btn-download"
-    nz-button
-    nzType="primary"
-    nzShape="round"
-    (click)="download()"
+  <nz-select
+    style="width: 120px;"
+    [(ngModel)]="listOfCourseOptions"
+    nzAllowClear
+    nzPlaceHolder="选择下载课程的试题模板"
+    (ngModelChange)="courseModelSelect($event)"
   >
-    <i nz-icon type="download"></i>下载模板
-  </button>
+    <nz-option
+      [nzLabel]="item.label"
+      [nzValue]="item.value"
+      *ngFor="let item of listOfCourseOption"
+    ></nz-option>
+  </nz-select>
 </ng-container>
 <nz-upload class="btn-upload" [nzCustomRequest]="customRequest">
   <button nz-button>
@@ -36,7 +39,7 @@
       <th>类型</th>
       <th>知识点</th>
       <th>难度</th>
-      <th nzWidth="100px">删除</th>
+      <th nzWidth="100px">操作</th>
     </tr>
   </thead>
   <tbody>
@@ -299,6 +302,12 @@
       titleProfileInfo.course == null ? '未填写' : titleProfileInfo.course
     }}
   </p>
+  <ng-container *ngIf="titleProfileInfo.category == '选择题'">
+    <p>A:{{ titleProfileInfo.sectionA }}</p>
+    <p>B:{{ titleProfileInfo.sectionB }}</p>
+    <p>C:{{ titleProfileInfo.sectionC }}</p>
+    <p>D:{{ titleProfileInfo.sectionD }}</p>
+  </ng-container>
 </nz-modal>
 
 <!-- 单个试题添加 模态框 -->
@@ -309,51 +318,197 @@
   (nzOnOk)="handleUpdateOk()"
   [nzOkLoading]="isUpdateLoading"
 >
-  <form nz-form [formGroup]="validateForm">
+  <form nz-form [formGroup]="updateFrom">
     <nz-form-item>
       <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="title"
         >题目</nz-form-label
       >
       <nz-form-control [nzSm]="14" [nzXs]="24">
-        <input nz-input formControlName="title" id="title" />
+        <textarea nz-input formControlName="title" id="title"></textarea>
+
         <nz-form-explain
           *ngIf="
-            validateForm.get('title')?.dirty &&
-            validateForm.get('title')?.errors
+            updateFrom.get('title')?.dirty && updateFrom.get('title')?.errors
           "
         >
           题目必须填写
         </nz-form-explain>
       </nz-form-control>
+      (空请用 _____ 表示)
     </nz-form-item>
-    <nz-form-item>
-      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="answer" nzRequired
-        >答案</nz-form-label
-      >
-      <nz-form-control [nzSm]="14" [nzXs]="24">
-        <input nz-input id="answer" formControlName="answer" />
-        <nz-form-explain
-          *ngIf="
-            validateForm.get('answer')?.dirty &&
-            validateForm.get('answer')?.errors
-          "
-          >请输入答案!</nz-form-explain
-        >
-      </nz-form-control>
-    </nz-form-item>
+
     <nz-form-item>
       <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="analysis" nzRequired
         >试题分析</nz-form-label
       >
       <nz-form-control [nzSm]="14" [nzXs]="24">
         <input nz-input id="analysis" formControlName="analysis" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="difficulty" nzRequired
+        >试题难度</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-input-number
+          nz-input
+          id="difficulty"
+          formControlName="difficulty"
+          type="number"
+          nzMax="1"
+          nzMin="0"
+        ></nz-input-number>
         <nz-form-explain
           *ngIf="
-            validateForm.get('analysis')?.dirty &&
-            validateForm.get('analysis')?.errors
+            updateFrom.get('difficulty')?.dirty &&
+            updateFrom.get('difficulty')?.errors
           "
-          >请输入试题分析!</nz-form-explain
+          >请输入试题难度!</nz-form-explain
         >
+      </nz-form-control>
+      难度在0~1之间
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="courseId" nzRequired>
+        <span>
+          课程
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 100%;"
+          nzShowSearch="true"
+          nzPlaceHolder="选择课程"
+          [(ngModel)]="listOfCourseOptions"
+          formControlName="courseId"
+          (ngModelChange)="courseModelChange($event)"
+        >
+          <nz-option
+            [nzLabel]="item.label"
+            [nzValue]="item.value"
+            *ngFor="let item of listOfCourseOption"
+          >
+          </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="knowledgeId" nzRequired>
+        <span>
+          主要考察知识点
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 100%;"
+          nzShowSearch="true"
+          nzPlaceHolder="选择主要知识点"
+          [(ngModel)]="listOfKnowledgeOptions"
+          formControlName="knowledgeId"
+        >
+          <nz-option
+            [nzLabel]="item.label"
+            [nzValue]="item.value"
+            *ngFor="let item of listOfKnowledgeIdOption"
+          ></nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="category" nzRequired>
+        <span>
+          题型
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 100%;"
+          nzShowSearch="true"
+          nzPlaceHolder="选择题型"
+          [(ngModel)]="listOfTypeOptions"
+          formControlName="category"
+        >
+          <nz-option nzLabel="选择题" nzValue="1"> </nz-option>
+          <nz-option nzLabel="填空题" nzValue="2"> </nz-option>
+          <nz-option nzLabel="简答题" nzValue="3"> </nz-option>
+        </nz-select>
+      </nz-form-control>
+    </nz-form-item>
+    <ng-container *ngIf="listOfTypeOptions == 1; else elseTemplate">
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="answer" nzRequired
+          >答案</nz-form-label
+        >
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <nz-radio-group [(ngModel)]="selectAnswer" formControlName="answer">
+            <label nz-radio nzValue="A">A</label>
+            <label nz-radio nzValue="B">B</label>
+            <label nz-radio nzValue="C">C</label>
+            <label nz-radio nzValue="D">D</label>
+          </nz-radio-group>
+        </nz-form-control>
+      </nz-form-item>
+    </ng-container>
+    <ng-template #elseTemplate>
+      <nz-form-item>
+        <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="answer" nzRequired
+          >答案</nz-form-label
+        >
+        <nz-form-control [nzSm]="14" [nzXs]="24">
+          <input nz-input id="answer" formControlName="answer" />
+          <nz-form-explain
+            *ngIf="
+              updateFrom.get('answer')?.dirty &&
+              updateFrom.get('answer')?.errors
+            "
+            >请输入答案!</nz-form-explain
+          >
+        </nz-form-control>
+      </nz-form-item>
+    </ng-template>
+    <nz-form-item *ngIf="listOfTypeOptions == 2">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="isOrder" nzRequired
+        >答案是否有序</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-radio-group [(ngModel)]="isOrderValue" formControlName="isOrder">
+          <label nz-radio nzValue="1">有序</label>
+          <label nz-radio nzValue="0">无序</label>
+        </nz-radio-group>
+      </nz-form-control>
+    </nz-form-item>
+    <!-- 选项 -->
+    <nz-form-item *ngIf="listOfTypeOptions == 1">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="sectionA" nzRequired
+        >A选项</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="sectionA" formControlName="sectionA" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item *ngIf="listOfTypeOptions == 1">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="sectionB" nzRequired
+        >B选项</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="sectionB" formControlName="sectionB" />
+      </nz-form-control>
+    </nz-form-item>
+
+    <nz-form-item *ngIf="listOfTypeOptions == 1">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="sectionC" nzRequired
+        >C选项</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="sectionC" formControlName="sectionC" />
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item *ngIf="listOfTypeOptions == 1">
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="sectionD" nzRequired
+        >D选项</nz-form-label
+      >
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <input nz-input id="sectionD" formControlName="sectionD" />
       </nz-form-control>
     </nz-form-item>
   </form>

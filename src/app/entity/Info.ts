@@ -94,4 +94,6 @@ export class TitleProfileInfo {
   sectionB: string;
   sectionC: string;
   sectionD: string;
+  answer: string;
+  order: string;
 }
