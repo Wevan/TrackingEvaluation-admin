@@ -33,10 +33,11 @@ const routes: Routes = [
       './course-direction/course-direction.module#CourseDirectionModule',
   },
   { path: 'course', loadChildren: './course/course.module#CourseModule' },
-  {
-    path: 'courseTarget',
-    loadChildren: './course-target/course-target.module#CourseTargetModule',
-  },
+
+  { path: 'courseTarget', loadChildren: './course-target/course-target.module#CourseTargetModule' },
+  { path: 'knowledge', loadChildren: './knowledge/knowledge.module#KnowledgeModule' },
+  { path: 'ways', loadChildren: './ways/ways.module#WaysModule' },
+
 ];
 
 @NgModule({
