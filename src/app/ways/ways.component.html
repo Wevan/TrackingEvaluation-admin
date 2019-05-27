@@ -1,0 +1,151 @@
+<button nz-button nzType="default" (click)="addWays()">添加</button>
+
+<nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
+
+<!-- 信息展示表格 -->
+<nz-tabset>
+  <nz-tab nzTitle="日常考核方式">
+    <nz-collapse nzAccordion>
+      <nz-collapse-panel *ngFor="let item of listOfDailyWays" [nzHeader]="item.courseName">
+        <nz-table #basicTable [nzData]="item.dailyWayList">
+          <thead>
+          <tr>
+            <th>序号</th>
+            <th>考核方式名称</th>
+            <th>百分比</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let sonitem of basicTable.data;let i=index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ sonitem.name }}</td>
+            <td>{{ sonitem.percent }}</td>
+          </tr>
+          </tbody>
+        </nz-table>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </nz-tab>
+  <nz-tab nzTitle="全局考核方式">
+    <nz-collapse nzAccordion>
+      <nz-collapse-panel *ngFor="let item of listOfGlobalWays" [nzHeader]="item.courseName">
+        <nz-table #basicTable [nzData]="item.globalList">
+          <thead>
+          <tr>
+            <th>序号</th>
+            <th>考核方式名称</th>
+            <th>百分比</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let sonitem of basicTable.data;let i=index">
+            <td>{{ i + 1 }}</td>
+            <td>{{ sonitem.name }}</td>
+            <td>{{ sonitem.percent }}</td>
+          </tr>
+          </tbody>
+        </nz-table>
+      </nz-collapse-panel>
+    </nz-collapse>
+  </nz-tab>
+</nz-tabset>
+
+<!-- 课程目标添加 模态框 -->
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="添加考核方式"
+  (nzOnCancel)="handleCancel()"
+  (nzOnOk)="handleOk()"
+  [nzOkLoading]="isOkLoading">
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="majorName">
+        专业名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 200px;"
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="选择专业"
+          [(ngModel)]="selectedCollege"
+          (nzBlur)="getCourseList()"
+          formControlName="majorName"
+          id="majorName"
+        >
+          <span *ngFor="let item of listOfCollege;let i=index">
+          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>
+          </span>
+        </nz-select>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('majorName')?.dirty &&
+            validateForm.get('majorName')?.errors
+          ">
+          专业必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="courseName">
+        课程名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 200px;"
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="选择课程"
+          [(ngModel)]="selectedCourse"
+          formControlName="courseName"
+          id="courseName"
+        >
+          <span *ngFor="let item of listOfCourse;let i=index">
+          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>
+          </span>
+        </nz-select>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('courseName')?.dirty &&
+            validateForm.get('courseName')?.errors
+          ">
+          课程必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="isGlobal">
+        模式类型
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-radio-group [(ngModel)]="radioValue" id="isGlobal" formControlName="isGlobal">
+          <label nz-radio nzValue="daily">日常</label>
+          <label nz-radio nzValue="global">全局</label>
+        </nz-radio-group>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('isGlobal')?.dirty &&
+            validateForm.get('isGlobal')?.errors
+          ">
+          模式类型
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="waysList" nzRequired>
+        <span>
+          考核方式
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <textarea id="waysList" formControlName="waysList"
+                  nz-input
+                  placeholder="考核方式多个，每个请用[]包裹
+eg:[方式1/0.3][方式2/0.5][方式3/0.2]"
+                  [(ngModel)]="value"
+                  [nzAutosize]="{ minRows: 3, maxRows: 6 }"
+        ></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
