@@ -9,6 +9,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { CollegeTargetComponent } from './college-target/college-target.component';
 import { CollegeTargetRelationComponent } from './college-target-relation/college-target-relation.component';
+import { CourseDirectionComponent } from './course-direction/course-direction.component';
+import { CourseTargetComponent } from './course-target/course-target.component';
 
 @NgModule({
   declarations: [AppComponent],
