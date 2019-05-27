@@ -1,4 +1,10 @@
-import { HttpClient } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpRequest,
+  HttpEvent,
+  HttpEventType,
+  HttpResponse,
+} from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UploadFile, UploadXHRArgs, NzMessageService } from 'ng-zorro-antd';
@@ -65,31 +71,34 @@ export class QuestionComponent implements OnInit {
       sectionD: [null],
     });
     this.updateFrom = this.fb.group({
-      name: [null, [Validators.required]],
-      studentNumber: [null, [Validators.required]],
-      class: [null, [Validators.required]],
+      title: [null, [Validators.required]],
+      answer: [null, [Validators.required]],
+      analysis: [null, [Validators.required]],
+      difficulty: [null, [Validators.required]],
+      courseId: [null, [Validators.required]],
+      // 主要知识点
+      knowledgeId: [null, [Validators.required]],
+      isOrder: [null],
+      category: [null, [Validators.required]],
+      sectionA: [null],
+      sectionB: [null],
+      sectionC: [null],
+      sectionD: [null],
     });
-    const children: Array<{ label: string; value: string }> = [];
-    // 获取班级的请求
-    // this.userService.getClasses().subscribe((result: Result) => {
-    //   for (let i = 0; i < result.data.length; i++) {
-    //     children.push({
-    //       label: result.data[i].name,
-    //       value: result.data[i].id,
-    //     });
-    //   }
-    //   this.listOfOption = children;
-    // });
 
     // 获取所有试题
     this.testQuestionService.getAllTitles().subscribe((result: Result) => {
       console.log('students ', result.data);
       this.listOfData = result.data;
     });
+    this.getCourse();
   }
 
   addTitle(): void {
     this.isVisible = true;
+    this.getCourse();
+  }
+  private getCourse() {
     const courseChildren: Array<{ label: string; value: string }> = [];
     this.testQuestionService.getAllCourse().subscribe((result: Result) => {
       console.log('data => ', result.data);
@@ -102,12 +111,17 @@ export class QuestionComponent implements OnInit {
       this.listOfCourseOption = courseChildren;
     });
   }
+  courseModelSelect(event: number) {
+    if (event == undefined || event == NaN) {
+      return;
+    }
+    this.download(event);
+  }
 
   courseModelChange(event: number) {
     if (event == undefined) {
       return;
     }
-    console.log('event =>', event);
     const knowledgeIdChildren: Array<{ label: string; value: string }> = [];
     this.testQuestionService.findByCourse(event).subscribe((result: Result) => {
       for (let i = 0; i < result.data.length; i++) {
@@ -125,26 +139,26 @@ export class QuestionComponent implements OnInit {
   customRequest = (item: UploadXHRArgs) => {
     const formData = new FormData();
     formData.append('excel', item.file as any);
-    // const req = new HttpRequest('POST', `/file/excel/student`, formData, {
-    //   reportProgress: true,
-    // });
-    // return this.http.request(req).subscribe(
-    //   (event: HttpEvent<{}>) => {
-    //     console.log('event |> ', event);
+    const req = new HttpRequest('POST', `/file/excel/title`, formData, {
+      reportProgress: true,
+    });
+    return this.http.request(req).subscribe(
+      (event: HttpEvent<{}>) => {
+        console.log('event |> ', event);
 
-    //     if (event.type === HttpEventType.UploadProgress) {
-    //       if (event.total > 0) {
-    //         (event as any).percent = (event.loaded / event.total) * 100;
-    //       }
-    //       item.onProgress(event, item.file);
-    //     } else if (event instanceof HttpResponse) {
-    //       item.onSuccess(event.body, item.file, event);
-    //     }
-    //   },
-    //   err => {
-    //     item.onError(err, item.file);
-    //   },
-    // );
+        if (event.type === HttpEventType.UploadProgress) {
+          if (event.total > 0) {
+            (event as any).percent = (event.loaded / event.total) * 100;
+          }
+          item.onProgress(event, item.file);
+        } else if (event instanceof HttpResponse) {
+          item.onSuccess(event.body, item.file, event);
+        }
+      },
+      err => {
+        item.onError(err, item.file);
+      },
+    );
   };
 
   /**
@@ -258,10 +272,91 @@ export class QuestionComponent implements OnInit {
   }
 
   handleUpdateOk() {
+    console.log('update');
+    const titleParam = new TitleParam();
+    titleParam.title = this.updateFrom.get('title').value;
+    titleParam.answer = this.updateFrom.get('answer').value;
+    titleParam.analysis = this.updateFrom.get('analysis').value;
+    titleParam.difficulty = this.updateFrom.get('difficulty').value;
+    titleParam.courseId = this.updateFrom.get('courseId').value;
+    titleParam.knowledgeId = this.updateFrom.get('knowledgeId').value;
+    titleParam.isOrder = this.updateFrom.get('isOrder').value;
+    titleParam.category = this.updateFrom.get('category').value;
+    titleParam.sectionA = this.updateFrom.get('sectionA').value;
+    titleParam.sectionB = this.updateFrom.get('sectionB').value;
+    titleParam.sectionC = this.updateFrom.get('sectionC').value;
+    titleParam.sectionD = this.updateFrom.get('sectionD').value;
+    console.log('title ', titleParam);
+    if (titleParam.category == '1') {
+      if (titleParam.sectionA == null) {
+        this.message.create('error', `请设置A选项`);
+        return;
+      } else {
+        titleParam.sectionA = '【' + titleParam.sectionA + '】';
+      }
+      if (titleParam.sectionB == null) {
+        this.message.create('error', `请设置B选项`);
+        return;
+      } else {
+        titleParam.sectionB = '【' + titleParam.sectionB + '】';
+      }
+      if (titleParam.sectionC == null) {
+        this.message.create('error', `请设置C选项`);
+        return;
+      } else {
+        titleParam.sectionC = '【' + titleParam.sectionC + '】';
+      }
+      if (titleParam.sectionD == null) {
+        this.message.create('error', `请设置D选项`);
+
+        return;
+      } else {
+        titleParam.sectionD = '【' + titleParam.sectionD + '】';
+      }
+    }
+    if (titleParam.category == '2') {
+      if (titleParam.isOrder == null) {
+        // 默认为无序答案
+        titleParam.isOrder = 0;
+      }
+    }
+    this.isUpdateLoading = true;
+    this.testQuestionService
+      .updateTitle(titleParam)
+      .subscribe((result: Result) => {
+        console.log(result);
+      });
+    this.isUpdateLoading = false;
     this.isUpdateVisible = false;
   }
 
+  updateTitleProfileInfoId = 0;
   openUpdate(titleProfileInfo: TitleProfileInfo) {
+    console.log(titleProfileInfo);
     this.isUpdateVisible = true;
+    this.updateTitleProfileInfoId = titleProfileInfo.id;
+    this.updateFrom.get('title').setValue(titleProfileInfo.title);
+    this.updateFrom.get('answer').setValue(titleProfileInfo.answer);
+    this.updateFrom.get('analysis').setValue(titleProfileInfo.answer);
+    this.updateFrom.get('difficulty').setValue(titleProfileInfo.difficulty);
+    this.getCourse();
+    switch (titleProfileInfo.category) {
+      case '选择题':
+        titleProfileInfo.category = '1';
+        break;
+      case '填空题':
+        titleProfileInfo.category = '2';
+        break;
+      case '简答题':
+        titleProfileInfo.category = '3';
+        break;
+    }
+    this.selectAnswer = titleProfileInfo.answer;
+    this.isOrderValue = titleProfileInfo.order;
+    this.updateFrom.get('category').setValue(titleProfileInfo.category);
+    this.updateFrom.get('sectionA').setValue(titleProfileInfo.sectionA);
+    this.updateFrom.get('sectionB').setValue(titleProfileInfo.sectionB);
+    this.updateFrom.get('sectionC').setValue(titleProfileInfo.sectionC);
+    this.updateFrom.get('sectionD').setValue(titleProfileInfo.sectionD);
   }
 }

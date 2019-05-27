@@ -36,4 +36,12 @@ export class TestQuestionService {
   addTitle(titleParam: TitleParam): Observable<Result> {
     return this.http.post<Result>('/title', titleParam);
   }
+
+  /**
+   * 更新试题
+   * @param titleParam 试题
+   */
+  updateTitle(titleParam: TitleParam): Observable<Result> {
+    return this.http.put<Result>('/title', titleParam);
+  }
 }

@@ -9,14 +9,23 @@ const routes: Routes = [
   },
   { path: 'college', loadChildren: './college/college.module#CollegeModule' },
 
-  { path: 'collegeTarget', loadChildren: './college-target/college-target.module#CollegeTargetModule' },
-  { path: 'collegeTargetRelation', loadChildren: './college-target-relation/college-target-relation.module#CollegeTargetRelationModule' },
-  { path: 'direction', loadChildren: './direction/direction.module#DirectionModule' },
+  {
+    path: 'collegeTarget',
+    loadChildren: './college-target/college-target.module#CollegeTargetModule',
+  },
+  {
+    path: 'collegeTargetRelation',
+    loadChildren:
+      './college-target-relation/college-target-relation.module#CollegeTargetRelationModule',
+  },
+  {
+    path: 'direction',
+    loadChildren: './direction/direction.module#DirectionModule',
+  },
   {
     path: 'class',
     loadChildren: './class-manager/class-manager.module#ClassManagerModule',
   },
-
 ];
 
 @NgModule({
