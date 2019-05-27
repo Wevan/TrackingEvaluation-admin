@@ -44,4 +44,13 @@ export class TestQuestionService {
   updateTitle(titleParam: TitleParam): Observable<Result> {
     return this.http.put<Result>('/title', titleParam);
   }
+
+  /**
+   * 获取算法题
+   * @param category
+   */
+  getTitleByCategory(category: String): Observable<Result> {
+    console.log('category ', category);
+    return this.http.get<Result>(`/title/${category}`);
+  }
 }
