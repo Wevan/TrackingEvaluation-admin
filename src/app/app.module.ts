@@ -7,6 +7,8 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { CourseAndCollegeTargetComponent } from './course-and-college-target/course-and-college-target.component';
+import { CourseTarAndKnowledgeComponent } from './course-tar-and-knowledge/course-tar-and-knowledge.component';
 
 @NgModule({
   declarations: [AppComponent],

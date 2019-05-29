@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import {CourseComponent} from './course.component';
+import {CourseService} from './course.service';
 
 const routes: Routes = [
   {path: '', component: CourseComponent}
@@ -8,6 +9,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers: [CourseService]
 })
 export class CourseRoutingModule { }

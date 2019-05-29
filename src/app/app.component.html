@@ -67,8 +67,8 @@
           <li nz-menu-item (click)="toRouter('courseTarget')">课程目标</li>
           <li nz-menu-item (click)="toRouter('knowledge')">知识点管理</li>
           <li nz-menu-item (click)="toRouter('ways')">考核方式管理</li>
-          <li nz-menu-item>知识点与课程目标</li>
-          <li nz-menu-item>课程与专业目标</li>
+          <li nz-menu-item (click)="toRouter('courseTarAndKnowledge')">知识点与课程目标</li>
+          <li nz-menu-item (click)="toRouter('courseAndCollegeTarget')">课程与专业目标</li>
         </ul>
       </li>
     </ul>
@@ -92,7 +92,7 @@
       </div>
     </nz-content>
     <nz-footer style="text-align: center;"
-      >Ant Design ©2019 Implement By Angular
+    >Ant Design ©2019 Implement By Angular
     </nz-footer>
   </nz-layout>
 </nz-layout>

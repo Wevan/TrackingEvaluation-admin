@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {Routes, RouterModule} from '@angular/router';
 
 const routes: Routes = [
-  { path: '', loadChildren: './user/user.module#UserModule' },
+  {path: '', loadChildren: './user/user.module#UserModule'},
   {
     path: 'question',
     loadChildren: './test-question/test-question.module#TestQuestionModule',
   },
-  { path: 'college', loadChildren: './college/college.module#CollegeModule' },
+  {path: 'college', loadChildren: './college/college.module#CollegeModule'},
 
   {
     path: 'collegeTarget',
@@ -32,11 +32,19 @@ const routes: Routes = [
     loadChildren:
       './course-direction/course-direction.module#CourseDirectionModule',
   },
-  { path: 'course', loadChildren: './course/course.module#CourseModule' },
+  {path: 'course', loadChildren: './course/course.module#CourseModule'},
 
-  { path: 'courseTarget', loadChildren: './course-target/course-target.module#CourseTargetModule' },
-  { path: 'knowledge', loadChildren: './knowledge/knowledge.module#KnowledgeModule' },
-  { path: 'ways', loadChildren: './ways/ways.module#WaysModule' },
+  {path: 'courseTarget', loadChildren: './course-target/course-target.module#CourseTargetModule'},
+  {path: 'knowledge', loadChildren: './knowledge/knowledge.module#KnowledgeModule'},
+  {path: 'ways', loadChildren: './ways/ways.module#WaysModule'},
+  {
+    path: 'courseAndCollegeTarget',
+    loadChildren: './course-and-college-target/course-and-college-target.module#CourseAndCollegeTargetModule'
+  },
+  {
+    path: 'courseTarAndKnowledge',
+    loadChildren: './course-tar-and-knowledge/course-tar-and-knowledge.module#CourseTarAndKnowledgeModule'
+  },
 
 ];
 
@@ -44,4 +52,5 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule {
+}

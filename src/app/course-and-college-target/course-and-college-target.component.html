@@ -1,0 +1,155 @@
+<ng-container class="button-group">
+  <button nz-button nzType="default" (click)="addCollegeTarget()">添加</button>
+
+  <button
+    class="btn-download"
+    nz-button
+    nzType="primary"
+    [nzSize]="size"
+    nzShape="round"
+    (click)="downTemplate()"
+  >
+    <i nz-icon type="download"></i>下载模板
+  </button>
+  <button nz-button nzType="default" (click)="addCourseFile()">上传关系</button>
+
+</ng-container>
+
+
+<nz-divider nzText="详细信息" nzOrientation="left"></nz-divider>
+
+<!-- 信息展示表格 -->
+
+<nz-collapse nzAccordion>
+  <nz-collapse-panel *ngFor="let item of listOfRelation" [nzHeader]="item.courseName">
+    <nz-table #basicTable [nzData]="item.relationList">
+      <thead>
+      <tr>
+        <th>序号</th>
+        <th>课程名称</th>
+        <th>专业目标</th>
+        <th>百分比</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let sonitem of basicTable.data;let i=index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ sonitem.courseName }}</td>
+        <td>{{ sonitem.collegeTargetName }}</td>
+        <td>{{ sonitem.percent * 100 }}%</td>
+      </tr>
+      </tbody>
+    </nz-table>
+  </nz-collapse-panel>
+</nz-collapse>
+
+
+<!-- 专业目标添加 模态框 -->
+<nz-modal
+  [(nzVisible)]="isVisible"
+  nzTitle="关系模板下载"
+  [nzFooter]="visib"
+  (nzOnCancel)="handleCancel()" >
+  <form nz-form [formGroup]="validateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="majorName">
+        专业名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 200px;"
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="选择专业"
+          [(ngModel)]="selectedCollege"
+          formControlName="majorName"
+          id="majorName"
+        >
+          <span *ngFor="let item of listOfCollege;let i=index">
+          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>
+          </span>
+        </nz-select>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('majorName')?.dirty &&
+            validateForm.get('majorName')?.errors
+          ">
+          专业必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="downloadFile" nzRequired>
+        <span>
+          模板文件
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+
+        <button
+          class="btn-download"
+          nz-button
+          nzType="primary"
+          [nzSize]="size"
+          nzShape="round"
+          id="downloadFile"
+          (click)="download()"
+        >
+          <i nz-icon type="download"></i>下载模板
+        </button>
+
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<nz-modal
+  [(nzVisible)]="fileIsVisible"
+  [nzFooter]="vis"
+  (nzOnCancel)="handleCancel()"
+  nzTitle="上传课程信息">
+  <form nz-form [formGroup]="fileValidateForm">
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzRequired nzFor="fileMajorName">
+        专业名称
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-select
+          style="width: 200px;"
+          nzShowSearch
+          nzAllowClear
+          nzPlaceHolder="选择专业"
+          [(ngModel)]="fileSelectedCollege"
+          formControlName="fileMajorName"
+          id="fileMajorName"
+        >
+          <span *ngFor="let item of listOfCollege;let i=index">
+          <nz-option nzLabel="{{item.name}}" nzValue="{{item.id}}"></nz-option>
+          </span>
+        </nz-select>
+        <nz-form-explain
+          *ngIf="
+            validateForm.get('fileMajorName')?.dirty &&
+            validateForm.get('fileMajorName')?.errors
+          ">
+          专业必须填写
+        </nz-form-explain>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label [nzSm]="6" [nzXs]="24" nzFor="file" nzRequired>
+        <span>
+          课程信息文件
+        </span>
+      </nz-form-label>
+      <nz-form-control [nzSm]="14" [nzXs]="24">
+        <nz-upload class="btn-upload" [nzCustomRequest]="customRequest"
+                   id="file">
+          <button nz-button>
+            <i nz-icon nzType="upload"></i><span>点击上传</span>
+          </button>
+        </nz-upload>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
